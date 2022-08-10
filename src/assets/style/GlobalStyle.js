@@ -61,6 +61,10 @@ body {
   	justify-content: center;
   	background: #333;
 }
+
+/* font-family: "Oswald", sans-serif; */
+/* font-family: "Lato", sans-serif; */
+/* font-family: "Passion One", cursive; */
 `;
 
 export default GlobalStyle;
