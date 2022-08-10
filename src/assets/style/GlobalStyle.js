@@ -53,6 +53,10 @@ table {
 * {
     box-sizing: border-box;
   }
+
+body {
+	background: #333;
+}
 `;
 
 export default GlobalStyle;
