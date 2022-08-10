@@ -55,7 +55,11 @@ table {
   }
 
 body {
-	background: #333;
+	width: 100vw;
+  	height: 100vh;
+  	display: flex;
+  	justify-content: center;
+  	background: #333;
 }
 `;
 
