@@ -2,7 +2,7 @@
 
 .eslint*
 .prettier*
-
+.env*
 # dependencies
 /node_modules
 /.pnp
