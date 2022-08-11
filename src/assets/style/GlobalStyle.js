@@ -54,12 +54,21 @@ table {
     box-sizing: border-box;
   }
 
-  body{
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  }
+body {
+	width: 100vw;
+  	height: 100vh;
+  	display: flex;
+  	justify-content: center;
+  	background: #333;
+}
+
+a {
+	text-decoration: none;
+}
+
+/* font-family: "Oswald", sans-serif; */
+/* font-family: "Lato", sans-serif; */
+/* font-family: "Passion One", cursive; */
 `;
 
 export default GlobalStyle;
