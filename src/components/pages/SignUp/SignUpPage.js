@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import styled from "styled-components";
 import axios from "axios";
 
@@ -7,7 +8,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ThreeDots } from "react-loader-spinner";
 
 export default function SignUp() {
-  const API = "http://localhost:4000/sign-up";
+  const API = process.env.REACT_APP_API;
 
   const navigate = useNavigate();
 
@@ -18,6 +19,8 @@ export default function SignUp() {
     pictureURL: "",
   });
 
+  console.log(signUp);
+
   const [isLoading, setIsLoading] = useState(false); // loader spinner state
 
   async function handleSubmit(e) {
@@ -25,7 +28,7 @@ export default function SignUp() {
     setIsLoading(true);
 
     try {
-      await axios.post(API, signUp);
+      await axios.post(`${API}sign-up`, signUp);
 
       setIsLoading(false);
 
@@ -46,7 +49,7 @@ export default function SignUp() {
         </LogoContainer>
 
         <FormContainer>
-          <StyledForm onSubmit={() => handleSubmit()}>
+          <StyledForm onSubmit={(e) => handleSubmit(e)}>
             <StyledInput
               type="email"
               placeholder="e-mail"
