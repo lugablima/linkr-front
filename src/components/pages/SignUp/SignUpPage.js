@@ -46,35 +46,35 @@ export default function SignUp() {
         </LogoContainer>
 
         <FormContainer>
-          <StyledForm onSubmit={handleSubmit}>
+          <StyledForm onSubmit={() => handleSubmit()}>
             <StyledInput
               type="email"
               placeholder="e-mail"
               onChange={(e) => setSignUp({ ...signUp, email: e.target.value })}
               value={signUp.email}
               required
-            ></StyledInput>
+            />
             <StyledInput
               type="password"
               placeholder="password"
               onChange={(e) => setSignUp({ ...signUp, password: e.target.value })}
               value={signUp.password}
               required
-            ></StyledInput>
+            />
             <StyledInput
               type="text"
               placeholder="username"
               onChange={(e) => setSignUp({ ...signUp, username: e.target.value })}
               value={signUp.username}
               required
-            ></StyledInput>
+            />
             <StyledInput
               type="url"
               placeholder="picture url"
               onChange={(e) => setSignUp({ ...signUp, pictureURL: e.target.value })}
               value={signUp.pictureURL}
               required
-            ></StyledInput>
+            />
 
             <StyledButton type="submit" disabled={isLoading}>
               {isLoading ? (
