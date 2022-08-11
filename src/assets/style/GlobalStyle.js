@@ -62,6 +62,10 @@ body {
   	background: #333;
 }
 
+a {
+	text-decoration: none;
+}
+
 /* font-family: "Oswald", sans-serif; */
 /* font-family: "Lato", sans-serif; */
 /* font-family: "Passion One", cursive; */

@@ -1,38 +1,32 @@
 import styled from "styled-components";
 import { useState } from "react";
-// import axios from "axios";
+import { usePostsContext } from "../../../contexts/PostsContext";
 import stitch from "../../../assets/images/stitch.jpg";
 
 export default function PublicationCard() {
   const [inputs, setInputs] = useState({ link: "", description: "" });
   const [isDisabled, setIsDisabled] = useState(false);
+  const { setPosts, getPosts, createPost } = usePostsContext();
 
-  //  urlMetadata("https://stackoverflow.com/questions/42182577/is-it-possible-to-use-dotenv-in-a-react-project")
-  //    .then((metadata) => console.log(metadata))
-  //    .catch((error) => console.log(error));
-
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
-    if (inputs.link) {
-      setIsDisabled(true);
+    if (!inputs.link) return;
 
-      // const config = {
-      //   headers: {
-      //     Authorization: `Bearer `,
-      //   },
-      // };
+    setIsDisabled(true);
 
-      // axios.post(`${process.env.REACT_APP_API}/publication`, inputs, config)
-      //   .then(() => {
-      //     setIsDisabled(false);
-      //     setInputs({ link: "", description: "" });
-      //     // Atualizar a lista de posts
-      //   })
-      //   .catch(() => {
-      //     alert("Houve um erro ao publicar seu link");
-      //     setIsDisabled(false);
-      //   });
+    try {
+      await createPost(inputs);
+
+      setIsDisabled(false);
+      setInputs({ link: "", description: "" });
+      console.log("Criei o post");
+      const res = await getPosts();
+      console.log("Busquei os posts");
+      setPosts(res.data);
+    } catch (error) {
+      alert("Houve um erro ao publicar seu link");
+      setIsDisabled(false);
     }
   }
 
@@ -56,7 +50,6 @@ export default function PublicationCard() {
           onChange={(e) => setInputs({ ...inputs, description: e.target.value })}
           disabled={isDisabled}
         />
-        {/* <input type="text" placeholder="Awesome article about #javascript" required /> */}
         <button type="submit" disabled={isDisabled}>
           {isDisabled ? "Publishing..." : "Publish"}
         </button>
@@ -130,14 +123,6 @@ const PublicationCardContainer = styled.div`
     padding: 8px 12px;
     resize: none;
   }
-
-  /* input[type="text"] {
-    height: 66px;
-    padding: 8px 12px;
-    text-align: left;
-    /* vertical-align: top; 
-    /* position: relative; 
-  } */
 
   button {
     width: 112px;
