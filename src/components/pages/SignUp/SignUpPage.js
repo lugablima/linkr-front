@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ThreeDots } from "react-loader-spinner";
 
 export default function SignUp() {
-  const API = "http://localhost:5000/sign-up";
+  const API = "http://localhost:4000/sign-up";
 
   const navigate = useNavigate();
 
