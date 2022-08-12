@@ -2,6 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import { IoHeartOutline, IoHeart } from "react-icons/io5";
 import axios from "axios";
+import ReactTooltip from "react-tooltip";
 
 export default function Post({ post: { id, user, link } }) {
   const [liked, setLiked] = useState(false);
@@ -45,7 +46,13 @@ export default function Post({ post: { id, user, link } }) {
           />
         )}
 
-        <Likes>14 likes</Likes>
+        <Likes data-tip data-for="likes">
+          14 likes
+        </Likes>
+
+        <ReactTooltip id="likes" place="bottom" type="light" effect="solid" delayShow={500} delayHide={500} className="tooltip-container">
+          <Tooltip>João, Maria e outras 11 pessoas</Tooltip>
+        </ReactTooltip>
       </LeftSide>
       <RightSide>
         <Username>{user.name}</Username>
@@ -89,6 +96,12 @@ const LeftSide = styled.div`
     object-position: 50% 50%;
     margin: 0 18px 19px 0;
     cursor: pointer;
+  }
+
+  .tooltip-container {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 3px;
+    padding: 6px 5px 5px 8px;
   }
 `;
 
@@ -160,11 +173,19 @@ const LinkInfos = styled.div`
   }
 `;
 
-const Likes = styled.p`
+const Likes = styled.a`
   width: 50px;
   word-break: break-all;
   word-wrap: normal;
   font: 400 11px/13px "Lato", sans-serif;
   text-align: center;
   color: #fff;
+`;
+
+const Tooltip = styled.p`
+  font: 700 11px/13px "Lato", sans-serif;
+  color: #505050;
+  text-align: center;
+  word-break: break-all;
+  word-wrap: normal;
 `;
