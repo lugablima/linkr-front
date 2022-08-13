@@ -1,31 +1,64 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { IoHeartOutline, IoHeart } from "react-icons/io5";
 import axios from "axios";
 import ReactTooltip from "react-tooltip";
 
 export default function Post({ post: { id, user, link } }) {
-  const [liked, setLiked] = useState(false);
+  const [likes, setLikes] = useState({});
+
+  const config = {
+    headers: {
+      Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTY2MDE4NjY0NCwiZXhwIjoxNjYxNDgyNjQ0fQ.kUTv9_jZnUE8svemlsjWibFcm2_HafwX_ugbXcNIo3c`,
+    },
+  };
+
+  function getLikes() {
+    axios.get(`${process.env.REACT_APP_API}/likes/${id}`, config).then((res) => {
+      setLikes(res.data);
+      ReactTooltip.rebuild();
+    });
+  }
+
+  setTimeout(() => ReactTooltip.rebuild(), [1000]);
+
+  useEffect(() => getLikes(), []);
+
+  const { likesCount, likedByUser } = likes;
+  const users = likes.users?.filter((el) => el !== user.name);
 
   function likePost(e) {
-    const config = {
-      headers: {
-        Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTY2MDE4NjY0NCwiZXhwIjoxNjYxNDgyNjQ0fQ.kUTv9_jZnUE8svemlsjWibFcm2_HafwX_ugbXcNIo3c`,
-      },
-    };
+    if (likedByUser && e.detail === 1) {
+      axios
+        .delete(`${process.env.REACT_APP_API}/likes/${id}`, config)
+        .then(() => getLikes())
+        .catch(() => {
+          alert("Could not unlike this post, please try again later!");
+        });
+    } else if (!likedByUser && e.detail === 1) {
+      axios
+        .post(`${process.env.REACT_APP_API}/likes`, { postId: id }, config)
+        .then(() => getLikes())
+        .catch(() => {
+          alert("Could not like this post, please try again later!");
+        });
+    }
+  }
 
-    if (liked && e.detail === 1) {
-      setLiked(false);
-      axios.delete(`${process.env.REACT_APP_API}/likes/${id}`, config).catch(() => {
-        alert("Could not unlike this post, please try again later!");
-        setLiked(true);
-      });
-    } else if (!liked && e.detail === 1) {
-      setLiked(true);
-      axios.post(`${process.env.REACT_APP_API}/likes`, { postId: id }, config).catch(() => {
-        alert("Could not like this post, please try again later!");
-        setLiked(false);
-      });
+  function RenderLikes() {
+    if (likedByUser && users) {
+      return (
+        <Tooltip>
+          You, {users[0]} and other {likesCount >= 2 ? likesCount - 2 : "0"} people
+        </Tooltip>
+      );
+    }
+    if (!likedByUser && users) {
+      return (
+        <Tooltip>
+          {users[0]}, {users[1]} and other {likesCount >= 2 ? likesCount - 2 : "0"} people
+        </Tooltip>
+      );
     }
   }
 
@@ -34,7 +67,7 @@ export default function Post({ post: { id, user, link } }) {
       <LeftSide>
         <img src={user.photo} alt="Usuário" />
 
-        {liked ? (
+        {likedByUser ? (
           <IoHeart
             style={{ width: "20px", height: "20px", color: "#AC0000", cursor: "pointer", margin: "0 0 4.01px 15px" }}
             onClick={(e) => likePost(e)}
@@ -46,13 +79,22 @@ export default function Post({ post: { id, user, link } }) {
           />
         )}
 
-        <Likes data-tip data-for="likes">
-          14 likes
-        </Likes>
+        {likesCount && (
+          <Likes data-tip data-for={`${id}`}>
+            {likesCount} {likesCount > 1 ? "likes" : "like"}
+          </Likes>
+        )}
 
-        <ReactTooltip id="likes" place="bottom" type="light" effect="solid" delayShow={500} delayHide={500} className="tooltip-container">
-          <Tooltip>João, Maria e outras 11 pessoas</Tooltip>
-        </ReactTooltip>
+        <ReactTooltip
+          id={`${id}`}
+          place="bottom"
+          type="light"
+          effect="solid"
+          delayShow={500}
+          isCapture
+          className="tooltip-container"
+          getContent={() => RenderLikes()}
+        />
       </LeftSide>
       <RightSide>
         <Username>{user.name}</Username>
