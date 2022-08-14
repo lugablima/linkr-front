@@ -61,7 +61,10 @@ body, #root {
   	justify-content: center; */
   	background: #333;
 	overflow-y: scroll;
+	overflow:hidden;
 }
+
+
 
 #root{
 	display: flex;

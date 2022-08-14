@@ -73,7 +73,7 @@ const Container = styled.div`
     padding-bottom: 12px;
     border-bottom: 1px solid #484848;
   }
-  @media (max-width: 750px) {
+  @media (max-width: 900px) {
     display: none;
   }
 `;
