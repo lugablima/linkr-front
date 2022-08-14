@@ -1,9 +1,21 @@
 import { useEffect } from "react";
 import styled from "styled-components";
+import { ReactTagify } from "react-tagify";
+import { useNavigate } from "react-router-dom";
 import PublicationCard from "./PublicationCard";
 import { usePostsContext } from "../../../contexts/PostsContext";
 
+import Trending from "./TrendingHashtags";
+
 function Post({ post: { user, link } }) {
+  const navigate = useNavigate();
+
+  const hashtagStyle = {
+    color: "white",
+    fontWeight: "700",
+    cursor: "pointer",
+  };
+
   return (
     <PostContainer>
       <img src={user.photo} alt="Usuário" />
@@ -14,7 +26,13 @@ function Post({ post: { user, link } }) {
           <LinkContainer>
             <div>
               <h4>{link.title ? link.title : "Clique no snippet para conferir este link!"}</h4>
-              <h5>{link.description ? link.description : "Esse link parece ser legal, clique no snippet para conferir!"}</h5>
+
+              <ReactTagify>
+                tagStyle={hashtagStyle}
+                tagClicked={(hashtag) => navigate(`/hashtag/${hashtag.replace("#", "")}`)}
+                <h5>{link.description ? link.description : "Esse link parece ser legal, clique no snippet para conferir!"}</h5>
+              </ReactTagify>
+
               <h6>{link.url}</h6>
             </div>
             <img src={link.image ? link.image : "#"} alt="Link" />
@@ -34,27 +52,32 @@ export default function TimelinePage() {
         setPosts(res.data);
       })
       .catch(() => {
-        alert("An error occured while trying to fetch the posts, please refresh the page");
+        // alert("An error occured while trying to fetch the posts, please refresh the page");
       });
   }, []);
 
   return (
-    <Container>
-      <h1>timeline</h1>
-      <PublicationCard />
-      {/* eslint-disable-next-line no-nested-ternary */}
-      {!posts ? (
-        <Message>Loading</Message>
-      ) : posts.length ? (
-        posts.map((post) => <Post key={post.id} post={post} />)
-      ) : (
-        <Message>There are no posts yet</Message>
-      )}
-    </Container>
+    <MainContainer>
+      <TrendingContainer>
+        <Container>
+          <h1>timeline</h1>
+          <PublicationCard />
+          {/* eslint-disable-next-line no-nested-ternary */}
+          {!posts ? (
+            <Message>Loading</Message>
+          ) : posts.length ? (
+            posts.map((post) => <Post key={post.id} post={post} />)
+          ) : (
+            <Message>There are no posts yet</Message>
+          )}
+        </Container>
+        <Trending />
+      </TrendingContainer>
+    </MainContainer>
   );
 }
 
-const Container = styled.div`
+const Container = styled.aside`
   width: 100vw;
   max-width: 611px;
   height: 100vh;
@@ -164,4 +187,16 @@ const Message = styled.p`
   font: 400 19px/23px "Lato", sans-serif;
   color: #fff;
   justify-content: center;
+`;
+
+const MainContainer = styled.div`
+  width: 100%;
+  max-width: 940px;
+  margin: auto;
+`;
+
+const TrendingContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
 `;

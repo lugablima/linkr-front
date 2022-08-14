@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import styled from "styled-components";
 import axios from "axios";
 
@@ -13,7 +14,7 @@ export default function LoginPage() {
 
   const [login, setLogin] = useState({
     email: "",
-    password: ""
+    password: "",
   });
 
   const [isLoading, setIsLoading] = useState(false); // loader spinner state
@@ -28,7 +29,7 @@ export default function LoginPage() {
       setIsLoading(false);
 
       localStorage.setItem("token", JSON.stringify(response.data));
-     
+
       navigate("/timeline");
     } catch (error) {
       setIsLoading(false);
@@ -45,22 +46,22 @@ export default function LoginPage() {
         </LogoContainer>
 
         <FormContainer>
-          <StyledForm onSubmit={handleSubmit}>
+          <StyledForm onSubmit={(e) => handleSubmit(e)}>
             <StyledInput
               type="email"
               placeholder="e-mail"
               onChange={(e) => setLogin({ ...login, email: e.target.value })}
               value={login.email}
               required
-            ></StyledInput>
+            />
             <StyledInput
               type="password"
               placeholder="password"
               onChange={(e) => setLogin({ ...login, password: e.target.value })}
               value={login.password}
               required
-            ></StyledInput>
-          
+            />
+
             <StyledButton type="submit" disabled={isLoading}>
               {isLoading ? (
                 <StyledSpinner>
@@ -218,4 +219,3 @@ const StyledSpinner = styled.div`
 
   margin-top: 10px;
 `;
-

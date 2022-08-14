@@ -19,8 +19,6 @@ export default function SignUp() {
     pictureURL: "",
   });
 
-  console.log(signUp);
-
   const [isLoading, setIsLoading] = useState(false); // loader spinner state
 
   async function handleSubmit(e) {
@@ -28,11 +26,10 @@ export default function SignUp() {
     setIsLoading(true);
 
     try {
-      await axios.post(`${API}sign-up`, signUp);
+      await axios.post(`${API}/sign-up`, signUp);
 
       setIsLoading(false);
 
-      alert("Success! Your account has been created");
       navigate("/");
     } catch (error) {
       setIsLoading(false);

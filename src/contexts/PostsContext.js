@@ -8,10 +8,10 @@ export const usePostsContext = () => useContext(PostsContext);
 export default function PostsProvider({ children }) {
   const [posts, setPosts] = useState(null);
 
+  const token = localStorage.getItem("token");
+
   const config = {
-    headers: {
-      Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTY2MDE4NjY0NCwiZXhwIjoxNjYxNDgyNjQ0fQ.kUTv9_jZnUE8svemlsjWibFcm2_HafwX_ugbXcNIo3c`,
-    },
+    headers: { Authorization: `Bearer ${token}` },
   };
 
   async function getPosts() {
