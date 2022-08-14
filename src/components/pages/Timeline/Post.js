@@ -3,9 +3,11 @@ import styled from "styled-components";
 import { IoHeartOutline, IoHeart } from "react-icons/io5";
 import axios from "axios";
 import ReactTooltip from "react-tooltip";
+import { useNavigate } from "react-router-dom";
 
 export default function Post({ post: { id, user, link } }) {
   const [likes, setLikes] = useState({});
+  const navigate = useNavigate();
 
   const config = {
     headers: {
@@ -87,7 +89,7 @@ export default function Post({ post: { id, user, link } }) {
         />
       </LeftSide>
       <RightSide>
-        <Username>{user.name}</Username>
+        <Username onClick={() => navigate(`/user/${user.id}`, { state: { username: user.name } })}>{user.name}</Username>
         <LegendLink>{link.legend}</LegendLink>
         <a href={link.url} target="_blank" rel="noreferrer">
           <LinkContainer>
