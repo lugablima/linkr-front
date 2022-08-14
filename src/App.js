@@ -1,3 +1,5 @@
+/* eslint-disable import/no-named-as-default-member */
+/* eslint-disable import/no-named-as-default */
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import GlobalStyle from "./assets/style/GlobalStyle";

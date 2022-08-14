@@ -1,16 +1,17 @@
+/* eslint-disable no-unused-vars */
 import styled from "styled-components";
 import axios from "axios";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 // comecei import do user context
 import { ThreeDots } from "react-loader-spinner";
-// import { useUserContext } from "../../../contexts/UserContext";
+import { useUserContext } from "../../../contexts/UserContext";
 
 export default function LoginPage() {
   const API = process.env.REACT_APP_API;
 
   const navigate = useNavigate();
-  // const { user, setUser } = useUserContext();
+  const { user, setUser } = useUserContext();
 
   const [login, setLogin] = useState({
     email: "",
@@ -33,6 +34,8 @@ export default function LoginPage() {
         photo: response.data.photo,
         token: response.data.token,
       };
+
+      setUser({ ...data });
 
       localStorage.setItem("user", JSON.stringify(data));
 

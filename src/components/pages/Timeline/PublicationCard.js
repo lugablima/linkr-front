@@ -142,4 +142,43 @@ const PublicationCardContainer = styled.div`
   button:disabled {
     cursor: auto;
   }
+
+  @media (max-width: 767px) {
+    min-height: 164px;
+    border-radius: 0px;
+    padding: 10px 15px 12px;
+    margin-bottom: 16px;
+
+    & > img {
+      display: none;
+    }
+
+    h6 {
+      width: 100%;
+      font: 300 17px/20px "Lato", sans-serif;
+      text-align: center;
+      margin: 0 auto 9px;
+      word-break: break-all;
+      word-wrap: normal;
+    }
+
+    input,
+    textarea {
+      max-width: none;
+      font: 300 13px/16px "Lato", sans-serif;
+    }
+
+    input[type="url"] {
+      padding: 6px 11px 8px;
+    }
+
+    textarea {
+      height: 47px;
+      padding: 10px;
+    }
+
+    button {
+      height: 22px;
+    }
+  }
 `;

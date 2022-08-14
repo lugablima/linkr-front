@@ -64,9 +64,7 @@ body, #root {
 	overflow:hidden;
 }
 
-
-
-#root{
+#root {
 	display: flex;
 	justify-content: center;
 }
