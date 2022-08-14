@@ -67,17 +67,7 @@ export default function Post({ post: { id, user, link } }) {
       <LeftSide>
         <img src={user.photo} alt="Usuário" />
 
-        {likedByUser ? (
-          <IoHeart
-            style={{ width: "20px", height: "20px", color: "#AC0000", cursor: "pointer", margin: "0 0 4.01px 15px" }}
-            onClick={(e) => likePost(e)}
-          />
-        ) : (
-          <IoHeartOutline
-            style={{ width: "20px", height: "20px", color: "#fff", cursor: "pointer", margin: "0 0 4.01px 15px" }}
-            onClick={(e) => likePost(e)}
-          />
-        )}
+        {likedByUser ? <HeartIonIcon onClick={(e) => likePost(e)} /> : <HeartOutlineIonIcon onClick={(e) => likePost(e)} />}
 
         {likesCount && (
           <Likes data-tip data-for={`${id}`}>
@@ -121,14 +111,22 @@ const Container = styled.div`
   background: #171717;
   border-radius: 16px;
   padding: 17px 21px 20px 18px;
-  margin-bottom: 16px;
   display: flex;
+
+  @media (max-width: 767px) {
+    max-width: none;
+    height: 232px;
+    border-radius: 0px;
+    padding: 9px 18px 15px 15px;
+  }
 `;
 
 const LeftSide = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  align-items: center;
+  margin-right: 18px;
 
   & > img {
     width: 50px;
@@ -136,7 +134,7 @@ const LeftSide = styled.div`
     border-radius: 26.5px;
     object-fit: cover;
     object-position: 50% 50%;
-    margin: 0 18px 19px 0;
+    margin: 0 0 19px 0;
     cursor: pointer;
   }
 
@@ -145,13 +143,52 @@ const LeftSide = styled.div`
     border-radius: 3px;
     padding: 6px 5px 5px 8px;
   }
+
+  @media (max-width: 767px) {
+    margin-right: 14px;
+
+    & > img {
+      width: 40px;
+      height: 40px;
+      margin: 0 0 17px 0;
+    }
+  }
+`;
+
+const HeartIonIcon = styled(IoHeart)`
+  width: 20px;
+  height: 20px;
+  color: #ac0000;
+  cursor: pointer;
+  margin-bottom: 4.01px;
+
+  @media (max-width: 767px) {
+    margin-bottom: 12px;
+  }
+`;
+
+const HeartOutlineIonIcon = styled(IoHeartOutline)`
+  width: 20px;
+  height: 20px;
+  color: #fff;
+  cursor: pointer;
+  margin-bottom: 4.01px;
+
+  @media (max-width: 767px) {
+    margin-bottom: 12px;
+  }
 `;
 
 const RightSide = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   margin-top: 2px;
+
+  @media (max-width: 767px) {
+    margin-top: 1px;
+  }
 `;
 
 const Username = styled.h5`
@@ -159,6 +196,10 @@ const Username = styled.h5`
   color: #fff;
   margin-bottom: 7px;
   cursor: pointer;
+
+  @media (max-width: 767px) {
+    font: 400 17px/20px "Lato", sans-serif;
+  }
 `;
 
 const LegendLink = styled.h6`
@@ -167,6 +208,13 @@ const LegendLink = styled.h6`
   color: #b7b7b7;
   margin-bottom: 10px;
   word-break: normal;
+
+  @media (max-width: 767px) {
+    width: 100%;
+    height: 52px;
+    font: 400 15px/18px "Lato", sans-serif;
+    margin-bottom: 13px;
+  }
 `;
 
 const LinkContainer = styled.div`
@@ -183,35 +231,76 @@ const LinkContainer = styled.div`
 
   & > img {
     width: 153.44px;
-    /* height: 155px; */
+    aspect-ratio: 1 / 1;
     border-radius: 0px 12px 13px 0px;
     object-fit: cover;
     object-position: 50% 50%;
+  }
+
+  @media (max-width: 767px) {
+    max-width: none;
+    height: 115px;
+
+    & > img {
+      width: 32.98%;
+    }
   }
 `;
 
 const LinkInfos = styled.div`
   width: calc(100% - 153.44px);
   padding: 24px 27.44px 23px 19.31px;
+  overflow: hidden;
 
   h4 {
-    width: 249.98px;
+    width: 100%;
+    height: 38px;
     font: 400 16px/19px "Lato", sans-serif;
     color: #cecece;
     margin-bottom: 5px;
+    overflow: hidden;
   }
 
   h5 {
-    width: 302.82px;
+    width: 100%;
+    height: 39px;
     font: 400 11px/13px "Lato", sans-serif;
     color: #9b9595;
     margin-bottom: 13px;
+    overflow: hidden;
   }
 
   h6 {
-    width: 263.19px;
+    width: 100%;
+    height: 13px;
     font: 400 11px/13px "Lato", sans-serif;
     color: #cecece;
+    overflow: hidden;
+  }
+
+  @media (max-width: 767px) {
+    width: 67.01%;
+    padding: 7px 7px 8px 11px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    h4 {
+      height: 26px;
+      font: 400 11px/13px "Lato", sans-serif;
+      margin-bottom: 0px;
+    }
+
+    h5 {
+      height: 44px;
+      font: 400 9px/11px "Lato", sans-serif;
+      margin-bottom: 0px;
+    }
+
+    h6 {
+      height: 22px;
+      font: 400 9px/11px "Lato", sans-serif;
+    }
   }
 `;
 
@@ -222,6 +311,11 @@ const Likes = styled.a`
   font: 400 11px/13px "Lato", sans-serif;
   text-align: center;
   color: #fff;
+
+  @media (max-width: 767px) {
+    width: 100%;
+    font: 400 9px/11px "Lato", sans-serif;
+  }
 `;
 
 const Tooltip = styled.p`

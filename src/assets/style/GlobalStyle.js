@@ -54,12 +54,18 @@ table {
     box-sizing: border-box;
   }
 
-body {
+body, #root {
 	width: 100vw;
   	height: 100vh;
-  	display: flex;
-  	justify-content: center;
+	/* display: flex;
+  	justify-content: center; */
   	background: #333;
+	overflow-y: scroll;
+}
+
+#root {
+	display: flex;
+	justify-content: center;
 }
 
 a {

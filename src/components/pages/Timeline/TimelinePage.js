@@ -7,6 +7,14 @@ import { usePostsContext } from "../../../contexts/PostsContext";
 export default function TimelinePage() {
   const { posts, setPosts, getPosts } = usePostsContext();
 
+  function RenderPosts() {
+    if (!posts) return <Message>Loading</Message>;
+    if (posts.length) {
+      return posts.map((post) => <Post key={post.id} post={post} />);
+    }
+    return <Message>There are no posts yet</Message>;
+  }
+
   useEffect(() => {
     getPosts()
       .then((res) => {
@@ -21,14 +29,7 @@ export default function TimelinePage() {
     <Container>
       <h1>timeline</h1>
       <PublicationCard />
-      {/* eslint-disable-next-line no-nested-ternary */}
-      {!posts ? (
-        <Message>Loading</Message>
-      ) : posts.length ? (
-        posts.map((post) => <Post key={post.id} post={post} />)
-      ) : (
-        <Message>There are no posts yet</Message>
-      )}
+      <PostsContainer>{RenderPosts()}</PostsContainer>
     </Container>
   );
 }
@@ -40,7 +41,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 150px 0 10px;
+  margin-top: 150px;
 
   & > h1 {
     font: 700 43px/64px "Oswald", sans-serif;
@@ -48,10 +49,37 @@ const Container = styled.div`
     margin-bottom: 43px;
     align-self: flex-start;
   }
+
+  @media (max-width: 767px) {
+    width: 100%;
+    max-width: none;
+    margin-top: 91px;
+
+    & > h1 {
+      font: 700 33px/49px "Oswald", sans-serif;
+      margin: 0 0 19px 17px;
+    }
+  }
+`;
+
+const PostsContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+  padding-bottom: 78px;
+
+  @media (max-width: 767px) {
+    padding-bottom: 19px;
+  }
 `;
 
 const Message = styled.p`
   font: 400 19px/23px "Lato", sans-serif;
+  text-align: center;
   color: #fff;
-  justify-content: center;
+
+  @media (max-width: 767px) {
+    font: 400 17px/20px "Lato", sans-serif;
+  }
 `;
