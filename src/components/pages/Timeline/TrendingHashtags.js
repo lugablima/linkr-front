@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 export default function Trending() {
   const [hashtags, setHashtags] = useState([]);
   const API = process.env.REACT_APP_API;
+  const token = localStorage.getItem("token");
 
   const navigate = useNavigate();
 
@@ -21,7 +22,9 @@ export default function Trending() {
 
   const getTrending = async () => {
     try {
-      const response = await axios.get(`${API}/trending`);
+      const response = await axios.get(`${API}/trending`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setHashtags(response.data);
     } catch (error) {
       setHashtags([error.response.data.message]);
