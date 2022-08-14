@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import PublicationCard from "./PublicationCard";
 import { usePostsContext } from "../../../contexts/PostsContext";
 
+import HeaderComponent from "../../layouts/HeaderComponent";
 import Trending from "./TrendingHashtags";
 
 function Post({ post: { user, link } }) {
@@ -58,21 +59,24 @@ export default function TimelinePage() {
 
   return (
     <MainContainer>
-      <TrendingContainer>
-        <Container>
-          <h1>timeline</h1>
-          <PublicationCard />
-          {/* eslint-disable-next-line no-nested-ternary */}
-          {!posts ? (
-            <Message>Loading</Message>
-          ) : posts.length ? (
-            posts.map((post) => <Post key={post.id} post={post} />)
-          ) : (
-            <Message>There are no posts yet</Message>
-          )}
-        </Container>
-        <Trending />
-      </TrendingContainer>
+      <HeaderComponent />
+      <MiddleContainer>
+        <TrendingContainer>
+          <Container>
+            <h1>timeline</h1>
+            <PublicationCard />
+            {/* eslint-disable-next-line no-nested-ternary */}
+            {!posts ? (
+              <Message>Loading</Message>
+            ) : posts.length ? (
+              posts.map((post) => <Post key={post.id} post={post} />)
+            ) : (
+              <Message>There are no posts yet</Message>
+            )}
+          </Container>
+          <Trending />
+        </TrendingContainer>
+      </MiddleContainer>
     </MainContainer>
   );
 }
@@ -80,6 +84,7 @@ export default function TimelinePage() {
 const Container = styled.aside`
   width: 100vw;
   max-width: 611px;
+
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -191,7 +196,7 @@ const Message = styled.p`
 
 const MainContainer = styled.div`
   width: 100%;
-  max-width: 940px;
+
   margin: auto;
 `;
 
@@ -199,4 +204,13 @@ const TrendingContainer = styled.div`
   width: 100%;
   display: flex;
   justify-content: space-between;
+`;
+
+const MiddleContainer = styled.div`
+  max-width: 940px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
 `;

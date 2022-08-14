@@ -1,16 +1,16 @@
-/* eslint-disable react/no-unstable-nested-components */
 import styled from "styled-components";
 import axios from "axios";
-
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-
+// comecei import do user context
 import { ThreeDots } from "react-loader-spinner";
+// import { useUserContext } from "../../../contexts/UserContext";
 
 export default function LoginPage() {
   const API = process.env.REACT_APP_API;
 
   const navigate = useNavigate();
+  // const { user, setUser } = useUserContext();
 
   const [login, setLogin] = useState({
     email: "",
@@ -28,7 +28,13 @@ export default function LoginPage() {
 
       setIsLoading(false);
 
-      localStorage.setItem("token", JSON.stringify(response.data));
+      const data = {
+        name: response.data.name,
+        photo: response.data.photo,
+        token: response.data.token,
+      };
+
+      localStorage.setItem("user", JSON.stringify(data));
 
       navigate("/timeline");
     } catch (error) {
@@ -37,6 +43,7 @@ export default function LoginPage() {
     }
   }
 
+  // eslint-disable-next-line react/no-unstable-nested-components
   function BuildingLoginForms() {
     return (
       <>
@@ -94,7 +101,6 @@ const Container = styled.div`
   left: 0;
   right: 0;
   display: flex;
-
   @media (max-width: 1000px) {
     flex-direction: column;
   }
@@ -107,7 +113,6 @@ const LogoContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
   h1 {
     width: 442px;
     font: 700 106px "Passion One", cursive;
@@ -118,7 +123,6 @@ const LogoContainer = styled.div`
     font: 700 43px "Oswald", sans-serif;
     color: #fff;
   }
-
   @media (max-width: 1000px) {
     h1 {
       width: 237px;
@@ -138,14 +142,11 @@ const FormContainer = styled.div`
   height: 100%;
   width: 535px;
   background-color: #333333;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   h3 {
     margin-top: 14px;
-
     font: 400 20px "Lato", sans-serif;
     color: #fff;
     text-decoration: underline;
@@ -153,7 +154,6 @@ const FormContainer = styled.div`
     align-items: center;
     justify-content: center;
   }
-
   @media (max-width: 1000px) {
     position: relative;
     width: 100%;
@@ -173,7 +173,6 @@ const StyledInput = styled.input`
   width: 429px;
   height: 65px;
   margin-bottom: 12px;
-
   border: none;
   border-radius: 6px;
   font: 700 27px "Oswald", sans-serif;
@@ -189,22 +188,16 @@ const StyledInput = styled.input`
 
 const StyledButton = styled.button`
   background-color: #1877f2;
-
   width: 429px;
   height: 65px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border-radius: 6px;
   border: none;
-
   cursor: pointer;
-
   font: 700 27px "Oswald", sans-serif;
   color: #fff;
-
   @media (max-width: 1000px) {
     width: 330px;
     height: 55px;
@@ -216,6 +209,5 @@ const StyledSpinner = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-
   margin-top: 10px;
 `;
