@@ -1,3 +1,147 @@
+import styled from "styled-components";
+import axios from "axios";
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { RotatingLines } from "react-loader-spinner";
+
+import HeaderComponent from "../../layouts/HeaderComponent";
+import { usePostsContext } from "../../../contexts/PostsContext";
+import Trending from "./TrendingHashtags";
+import Post from "./Post";
+
 export default function HashtagPage() {
-  return <h1>Hashtag page</h1>;
+  const API = process.env.REACT_APP_API;
+  const token = localStorage.getItem("token");
+  const { posts, setPosts } = usePostsContext();
+
+  const { hashtag } = useParams();
+
+  function RenderPosts() {
+    if (!posts)
+      return (
+        <StyledSpinner>
+          <RotatingLines type="RotatingLines" strokeColor="grey" strokeWidth="5" animationDuration="0.75" width="70" visible />
+        </StyledSpinner>
+      );
+    if (posts.length) {
+      return posts.map((post) => <Post key={post.id} post={post} />);
+    }
+    return <Message>There are no posts yet</Message>;
+  }
+
+  useEffect(() => {
+    (async () => {
+      try {
+        axios
+          .get(`${API}/hashtag/${hashtag}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          })
+          .then((response) => {
+            const { data } = response;
+            setPosts(data);
+          })
+          .catch((error) => console.log(error));
+      } catch (error) {
+        console.log(error.response);
+        alert("An error occured while trying to fetch the posts, please refresh the page");
+      }
+    })();
+  }, [setPosts, hashtag, token]);
+
+  function BuildHashtagPage() {
+    return (
+      <MainContainer>
+        <HeaderComponent />
+        <MiddleContainer>
+          <TrendingContainer>
+            <Container>
+              <h1># {hashtag}</h1>
+              <PostsContainer>{RenderPosts()}</PostsContainer>
+            </Container>
+            <Trending />
+          </TrendingContainer>
+        </MiddleContainer>
+      </MainContainer>
+    );
+  }
+
+  const renderHashtagPage = BuildHashtagPage();
+
+  return { renderHashtagPage };
 }
+
+const Container = styled.aside`
+  width: 100vw;
+  max-width: 611px;
+
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 150px;
+
+  & > h1 {
+    font: 700 43px/64px "Oswald", sans-serif;
+    color: #fff;
+    margin-bottom: 43px;
+    align-self: flex-start;
+  }
+
+  @media (max-width: 767px) {
+    width: 100%;
+    max-width: none;
+    margin-top: 91px;
+
+    & > h1 {
+      font: 700 33px/49px "Oswald", sans-serif;
+      margin: 0 0 19px 17px;
+    }
+  }
+`;
+
+const PostsContainer = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  row-gap: 16px;
+  padding-bottom: 78px;
+
+  @media (max-width: 767px) {
+    padding-bottom: 19px;
+  }
+`;
+
+const Message = styled.p`
+  font: 400 19px/23px "Lato", sans-serif;
+  text-align: center;
+  color: #fff;
+
+  @media (max-width: 767px) {
+    font: 400 17px/20px "Lato", sans-serif;
+  }
+`;
+
+const MainContainer = styled.div`
+  width: 100%;
+
+  margin: auto;
+`;
+
+const TrendingContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+`;
+
+const MiddleContainer = styled.div`
+  max-width: 940px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+`;
+
+const StyledSpinner = styled.div`
+  margin: auto;
+`;
