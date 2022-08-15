@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import styled from "styled-components";
+import SearchBar from "./SearchBar";
 
 export default function HeaderComponent() {
   const [show, setShow] = useState(false);
@@ -21,10 +22,11 @@ export default function HeaderComponent() {
   return (
     <Header>
       <Title onClick={() => navigate("/timeline")}>linkr</Title>
+      <SearchBar />
       {show && <div className="overlay" onClick={() => setShow(false)} />}
       <div onClick={() => setShow(!show)}>
         {show ? <IoIosArrowUp size={30} fill="#FFFFFF" /> : <IoIosArrowDown size={30} fill="#FFFFFF" />}
-        {user && <img src={user.image} alt={user.name} />}
+        {user && <img src={user.photo} alt={user.username} />}
       </div>
 
       {show && (

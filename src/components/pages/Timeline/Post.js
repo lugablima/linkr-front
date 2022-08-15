@@ -10,10 +10,11 @@ import { useNavigate } from "react-router-dom";
 export default function Post({ post: { id, user, link } }) {
   const [likes, setLikes] = useState({});
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   const config = {
     headers: {
-      Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsImlhdCI6MTY2MDE4NjY0NCwiZXhwIjoxNjYxNDgyNjQ0fQ.kUTv9_jZnUE8svemlsjWibFcm2_HafwX_ugbXcNIo3c`,
+      Authorization: `Bearer ${token}`,
     },
   };
 
