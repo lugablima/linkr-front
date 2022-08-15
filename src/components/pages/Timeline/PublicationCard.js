@@ -1,12 +1,13 @@
 import styled from "styled-components";
 import { useState } from "react";
 import { usePostsContext } from "../../../contexts/PostsContext";
-import stitch from "../../../assets/images/stitch.jpg";
+import { useUserContext } from "../../../contexts/UserContext";
 
 export default function PublicationCard() {
   const [inputs, setInputs] = useState({ link: "", description: "" });
   const [isDisabled, setIsDisabled] = useState(false);
   const { setPosts, getPosts, createPost } = usePostsContext();
+  const { user, setUser } = useUserContext();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -32,7 +33,7 @@ export default function PublicationCard() {
 
   return (
     <PublicationCardContainer>
-      <img src={stitch} alt="Usuário" />
+      <img src={user.photo} alt={user.username} />
       <form onSubmit={(e) => handleSubmit(e)}>
         <h6>What are you going to share today?</h6>
         <input
