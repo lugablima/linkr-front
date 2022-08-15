@@ -57,10 +57,11 @@ table {
 body, #root {
 	width: 100vw;
   	height: 100vh;
-	/* display: flex;
+  	/* display: flex;
   	justify-content: center; */
   	background: #333;
 	overflow-y: scroll;
+	overflow:hidden;
 }
 
 #root {

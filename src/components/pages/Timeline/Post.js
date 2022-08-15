@@ -1,11 +1,15 @@
+/* eslint-disable react/no-unstable-nested-components */
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { IoHeartOutline, IoHeart } from "react-icons/io5";
 import axios from "axios";
 import ReactTooltip from "react-tooltip";
+import { ReactTagify } from "react-tagify";
+import { useNavigate } from "react-router-dom";
 
 export default function Post({ post: { id, user, link } }) {
   const [likes, setLikes] = useState({});
+  const navigate = useNavigate();
 
   const config = {
     headers: {
@@ -62,6 +66,12 @@ export default function Post({ post: { id, user, link } }) {
     }
   }
 
+  const hashtagStyle = {
+    color: "white",
+    fontWeight: "700",
+    cursor: "pointer",
+  };
+
   return (
     <Container>
       <LeftSide>
@@ -93,7 +103,13 @@ export default function Post({ post: { id, user, link } }) {
           <LinkContainer>
             <LinkInfos>
               <h4>{link.title ? link.title : "Clique no snippet para conferir este link!"}</h4>
-              <h5>{link.description ? link.description : "Esse link parece ser legal, clique no snippet para conferir!"}</h5>
+
+              <ReactTagify>
+                tagStyle={hashtagStyle}
+                tagClicked={(hashtag) => navigate(`/hashtag/${hashtag.replace("#", "")}`)}
+                <h5>{link.description ? link.description : "Esse link parece ser legal, clique no snippet para conferir!"}</h5>
+              </ReactTagify>
+
               <h6>{link.url}</h6>
             </LinkInfos>
             <img src={link.image ? link.image : "#"} alt="Link" />

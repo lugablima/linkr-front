@@ -1,14 +1,24 @@
+/* eslint-disable react/no-unstable-nested-components */
 import { useEffect } from "react";
 import styled from "styled-components";
+import { RotatingLines } from "react-loader-spinner";
 import PublicationCard from "./PublicationCard";
 import Post from "./Post";
 import { usePostsContext } from "../../../contexts/PostsContext";
+
+import Trending from "./TrendingHashtags";
+import HeaderComponent from "../../layouts/HeaderComponent";
 
 export default function TimelinePage() {
   const { posts, setPosts, getPosts } = usePostsContext();
 
   function RenderPosts() {
-    if (!posts) return <Message>Loading</Message>;
+    if (!posts)
+      return (
+        <StyledSpinner>
+          <RotatingLines type="RotatingLines" strokeColor="grey" strokeWidth="5" animationDuration="0.75" width="70" visible />
+        </StyledSpinner>
+      );
     if (posts.length) {
       return posts.map((post) => <Post key={post.id} post={post} />);
     }
@@ -26,17 +36,26 @@ export default function TimelinePage() {
   }, []);
 
   return (
-    <Container>
-      <h1>timeline</h1>
-      <PublicationCard />
-      <PostsContainer>{RenderPosts()}</PostsContainer>
-    </Container>
+    <MainContainer>
+      <HeaderComponent />
+      <MiddleContainer>
+        <TrendingContainer>
+          <Container>
+            <h1>timeline</h1>
+            <PublicationCard />
+            <PostsContainer>{RenderPosts()}</PostsContainer>
+          </Container>
+          <Trending />
+        </TrendingContainer>
+      </MiddleContainer>
+    </MainContainer>
   );
 }
 
-const Container = styled.div`
+const Container = styled.aside`
   width: 100vw;
   max-width: 611px;
+
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -82,4 +101,29 @@ const Message = styled.p`
   @media (max-width: 767px) {
     font: 400 17px/20px "Lato", sans-serif;
   }
+`;
+
+const MainContainer = styled.div`
+  width: 100%;
+
+  margin: auto;
+`;
+
+const TrendingContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+`;
+
+const MiddleContainer = styled.div`
+  max-width: 940px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+`;
+
+const StyledSpinner = styled.div`
+  margin: auto;
 `;
