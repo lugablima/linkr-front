@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { useEffect } from "react";
 import styled from "styled-components";
-import { RotatingLines } from "react-loader-spinner";
+
 import PublicationCard from "./PublicationCard";
 import Post from "./Post";
 import { usePostsContext } from "../../../contexts/PostsContext";
@@ -13,16 +13,10 @@ export default function TimelinePage() {
   const { posts, setPosts, getPosts } = usePostsContext();
 
   function RenderPosts() {
-    if (!posts)
-      return (
-        <StyledSpinner>
-          <RotatingLines type="RotatingLines" strokeColor="grey" strokeWidth="5" animationDuration="0.75" width="70" visible />
-        </StyledSpinner>
-      );
+    if (!posts) return <Message>There are no posts yet</Message>;
     if (posts.length) {
       return posts.map((post) => <Post key={post.id} post={post} />);
     }
-    return <Message>There are no posts yet</Message>;
   }
 
   useEffect(() => {
@@ -121,9 +115,5 @@ const MiddleContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: auto;
-`;
-
-const StyledSpinner = styled.div`
   margin: auto;
 `;

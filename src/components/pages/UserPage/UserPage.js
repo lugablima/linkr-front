@@ -4,7 +4,6 @@ import { useLocation, useParams } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { RotatingLines } from "react-loader-spinner";
 
 import HeaderComponent from "../../layouts/HeaderComponent";
 import { useUserContext } from "../../../contexts/UserContext";
@@ -16,6 +15,7 @@ export default function UserPage() {
 
   const location = useLocation();
   const { username, photo } = location.state;
+  console.log({ username });
 
   const [userPosts, setUserPosts] = useState(null);
 
@@ -25,16 +25,12 @@ export default function UserPage() {
   } = useUserContext();
 
   function RenderPosts() {
-    if (!userPosts)
-      return (
-        <StyledSpinner>
-          <RotatingLines type="RotatingLines" strokeColor="grey" strokeWidth="5" animationDuration="0.75" width="70" visible />
-        </StyledSpinner>
-      );
+    if (!userPosts) {
+      return <Message>{username} has no posts yet</Message>;
+    }
     if (userPosts.length) {
       return userPosts.map((post) => <Post key={post.id} post={post} />);
     }
-    return <Message>{username} has no posts yet</Message>;
   }
 
   useEffect(() => {
@@ -61,9 +57,9 @@ export default function UserPage() {
         <MiddleContainer>
           <TrendingContainer>
             <Container>
-              <h1>
-                <img src={photo} alt={username} /> {username}'s posts
-              </h1>
+              <span>
+                <img src={photo} alt={username} /> <h1> {username}'s posts</h1>
+              </span>
               <PostsContainer>{RenderPosts()}</PostsContainer>
             </Container>
             <Trending />
@@ -88,7 +84,19 @@ const Container = styled.aside`
   align-items: center;
   margin-top: 150px;
 
-  & > h1 {
+  span {
+    display: flex;
+    flex-direction: row;
+  }
+
+  img {
+    border-radius: 26px;
+    height: 50px;
+    width: 50px;
+    margin-right: 10px;
+  }
+
+  h1 {
     font: 700 43px/64px "Oswald", sans-serif;
     color: #fff;
     margin-bottom: 43px;
@@ -147,9 +155,5 @@ const MiddleContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: auto;
-`;
-
-const StyledSpinner = styled.div`
   margin: auto;
 `;

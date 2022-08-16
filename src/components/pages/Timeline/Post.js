@@ -101,9 +101,7 @@ export default function Post({ post: { id, user, link } }) {
         />
       </LeftSide>
       <RightSide>
-        <Username onClick={() => navigate(`/user/${user.id}`, { state: { username: user.username, photo: user.photo } })}>
-          {user.name}
-        </Username>
+        <Username onClick={() => navigate(`/user/${user.id}`, { state: { username: user.name, photo: user.photo } })}>{user.name}</Username>
 
         <ReactTagify tagStyle={hashtagStyle} tagClicked={(hashtag) => navigate(`/hashtag/${hashtag.replace("#", "").toLocaleLowerCase()}`)}>
           <LegendLink>{link.legend ? link.legend : ""}</LegendLink>

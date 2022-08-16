@@ -24,7 +24,7 @@ export default function Trending() {
       });
       setHashtags(response.data);
     } catch (error) {
-      setHashtags([error.response.data.message]);
+      console.log(error);
     }
   };
 
