@@ -54,7 +54,7 @@ const Container = styled.aside`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 150px;
+  margin-top: 50px;
 
   & > h1 {
     font: 700 43px/64px "Oswald", sans-serif;

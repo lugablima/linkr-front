@@ -60,7 +60,7 @@ const Container = styled.div`
   height: 406px;
   background-color: #171717;
   border-radius: 16px;
-  margin-top: 250px;
+  margin-top: 150px;
   padding: 9px 16px;
   overflow-y: scroll;
   -ms-overflow-style: none;
