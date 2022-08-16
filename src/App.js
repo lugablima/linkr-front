@@ -1,32 +1,32 @@
-/* eslint-disable import/no-named-as-default-member */
-/* eslint-disable import/no-named-as-default */
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import GlobalStyle from "./assets/style/GlobalStyle";
-import PostsProvider from "./contexts/PostsContext";
 import UserProvider from "./contexts/UserContext";
+import PostsProvider from "./contexts/PostsContext";
 
 import LoginPage from "./components/pages/Login/LoginPage";
 import SignUpPage from "./components/pages/SignUp/SignUpPage";
 import TimelinePage from "./components/pages/Timeline/TimelinePage";
 import HashtagPage from "./components/pages/Timeline/HashtagPage";
+import UserPage from "./components/pages/UserPage/UserPage";
 
 function App() {
   return (
     <>
       <GlobalStyle />
-      <PostsProvider>
-        <UserProvider>
+      <UserProvider>
+        <PostsProvider>
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<LoginPage />} />
               <Route path="/sign-up" element={<SignUpPage />} />
               <Route path="/timeline" element={<TimelinePage />} />
               <Route path="/hashtag/:hashtag" element={<HashtagPage />} />
+              <Route path="/users/:id" element={<UserPage />} />
             </Routes>
           </BrowserRouter>
-        </UserProvider>
-      </PostsProvider>
+        </PostsProvider>
+      </UserProvider>
     </>
   );
 }

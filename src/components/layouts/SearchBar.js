@@ -1,12 +1,12 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable react/no-array-index-key */
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DebounceInput } from "react-debounce-input";
 import { IoIosSearch } from "react-icons/io";
 import axios from "axios";
+import { useUserContext } from "../../contexts/UserContext";
 
 export default function SearchBar() {
   const [target, setTarget] = useState("");
@@ -14,20 +14,25 @@ export default function SearchBar() {
   const [show, setShow] = useState(false);
 
   const API = process.env.REACT_APP_API;
-  const token = localStorage.getItem("token");
+  const {
+    user: { token },
+  } = useUserContext();
   const navigate = useNavigate();
 
-  const handleSearch = async (e) => {
-    setTarget(e.target.value);
+  const handleSearch = async () => {
     try {
-      const response = await axios.get(`${API}/users/:username`, {
+      const response = await axios.get(`${API}/users/${target}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setResult(response.data);
     } catch (error) {
-      setResult([error.response.data.message]);
+      console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (target) handleSearch();
+  }, [target]);
 
   return (
     <>
@@ -39,28 +44,25 @@ export default function SearchBar() {
           type="text"
           placeholder="Search users..."
           value={target}
-          onShow={() => setShow(true)}
-          onChange={(e) => handleSearch(e)}
+          onFocus={() => setShow(true)}
+          onChange={(e) => setTarget(e.target.value)}
           required
         />
         <List display={show ? "flex" : "none"}>
-          {result?.map((user, index) => {
-            if (user.post) {
-              return (
-                <div className="user" key={index}>
-                  <p>No results</p>
-                </div>
-              );
-            }
-            return (
-              <div className="user" onClick={() => navigate(`/users/${user.id}`)} key={index}>
-                <img src={user.image} alt={user.username} key={index} />
+          {result.length ? (
+            result.map((user) => (
+              <div className="user" onClick={() => navigate(`/users/${user.id}`, { state: { username: user.username } })} key={user.id}>
+                <img src={user.pictureURL} alt={user.username} />
                 <div className="text">
                   <p>{user.username}</p>
                 </div>
               </div>
-            );
-          })}
+            ))
+          ) : (
+            <div className="user">
+              <p>No results</p>
+            </div>
+          )}
         </List>
         <SearchIcon>
           <IoIosSearch size={26} fill="#C6C6C6" />
@@ -71,7 +73,7 @@ export default function SearchBar() {
 }
 
 const OutShow = styled.div`
-  display: ${(props) => props.display}!important;
+  display: ${(props) => props.display && props.display}!important;
   position: absolute;
   top: 0;
   left: 0;

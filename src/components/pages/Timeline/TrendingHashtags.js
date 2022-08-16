@@ -1,5 +1,3 @@
-/* eslint-disable no-use-before-define */
-/* eslint-disable react/no-array-index-key */
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 
@@ -8,17 +6,16 @@ import axios from "axios";
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUserContext } from "../../../contexts/UserContext";
 
 export default function Trending() {
   const [hashtags, setHashtags] = useState([]);
   const API = process.env.REACT_APP_API;
-  const token = localStorage.getItem("token");
+  const {
+    user: { token },
+  } = useUserContext();
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    getTrending();
-  }, []);
 
   const getTrending = async () => {
     try {
@@ -31,24 +28,26 @@ export default function Trending() {
     }
   };
 
+  useEffect(() => {
+    getTrending();
+  }, []);
+
   return (
     <Container>
       <h2>trending</h2>
       <HashtagsContainer>
         <ul>
           {hashtags
-            ? hashtags.map((hashtag, index) => {
-                return (
-                  <li
-                    key={hashtag + index}
-                    onClick={() => {
-                      navigate(`/hashtag/${hashtag}`);
-                    }}
-                  >
-                    #{hashtag}
-                  </li>
-                );
-              })
+            ? hashtags.map((hashtag) => (
+                <li
+                  key={hashtag.id}
+                  onClick={() => {
+                    navigate(`/hashtag/${hashtag.name}`);
+                  }}
+                >
+                  #{hashtag.name}
+                </li>
+              ))
             : "Loading..."}
         </ul>
       </HashtagsContainer>

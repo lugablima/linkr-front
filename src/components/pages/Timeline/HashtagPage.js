@@ -1,73 +1,73 @@
 import styled from "styled-components";
 import axios from "axios";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { RotatingLines } from "react-loader-spinner";
 
 import HeaderComponent from "../../layouts/HeaderComponent";
-import { usePostsContext } from "../../../contexts/PostsContext";
+import { useUserContext } from "../../../contexts/UserContext";
 import Trending from "./TrendingHashtags";
 import Post from "./Post";
 
 export default function HashtagPage() {
   const API = process.env.REACT_APP_API;
-  const token = localStorage.getItem("token");
-  const { posts, setPosts } = usePostsContext();
+  const {
+    user: { token },
+  } = useUserContext();
+  const [hashtagPosts, setHashtagPosts] = useState(null);
 
   const { hashtag } = useParams();
 
   function RenderPosts() {
-    if (!posts)
+    if (!hashtagPosts)
       return (
         <StyledSpinner>
           <RotatingLines type="RotatingLines" strokeColor="grey" strokeWidth="5" animationDuration="0.75" width="70" visible />
         </StyledSpinner>
       );
-    if (posts.length) {
-      return posts.map((post) => <Post key={post.id} post={post} />);
+    if (hashtagPosts.length) {
+      return hashtagPosts.map((post) => <Post key={post.id} post={post} />);
     }
     return <Message>There are no posts yet</Message>;
   }
 
   useEffect(() => {
-    (async () => {
+    async function getHashtagPosts() {
       try {
-        axios
-          .get(`${API}/hashtag/${hashtag}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          })
-          .then((response) => {
-            const { data } = response;
-            setPosts(data);
-          })
-          .catch((error) => console.log(error));
+        const response = await axios.get(`${API}/hashtag/${hashtag}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setHashtagPosts(response.data);
       } catch (error) {
-        console.log(error.response);
+        // if(error.response.status === 404)
         alert("An error occured while trying to fetch the posts, please refresh the page");
       }
-    })();
-  }, [setPosts, hashtag, token]);
+    }
+
+    getHashtagPosts();
+  }, [hashtag]);
 
   function BuildHashtagPage() {
     return (
-      <MainContainer>
+      <>
         <HeaderComponent />
         <MiddleContainer>
           <TrendingContainer>
             <Container>
-              <h1># {hashtag}</h1>
+              <h1>#{hashtag}</h1>
               <PostsContainer>{RenderPosts()}</PostsContainer>
             </Container>
             <Trending />
           </TrendingContainer>
         </MiddleContainer>
-      </MainContainer>
+      </>
     );
   }
 
   const renderHashtagPage = BuildHashtagPage();
 
-  return { renderHashtagPage };
+  return <MainContainer>{renderHashtagPage}</MainContainer>;
 }
 
 const Container = styled.aside`

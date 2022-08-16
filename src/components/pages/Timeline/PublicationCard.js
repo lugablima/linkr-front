@@ -7,7 +7,7 @@ export default function PublicationCard() {
   const [inputs, setInputs] = useState({ link: "", description: "" });
   const [isDisabled, setIsDisabled] = useState(false);
   const { setPosts, getPosts, createPost } = usePostsContext();
-  const { user, setUser } = useUserContext();
+  const { user } = useUserContext();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -21,9 +21,7 @@ export default function PublicationCard() {
 
       setIsDisabled(false);
       setInputs({ link: "", description: "" });
-      console.log("Criei o post");
       const res = await getPosts();
-      console.log("Busquei os posts");
       setPosts(res.data);
     } catch (error) {
       alert("Houve um erro ao publicar seu link");
@@ -33,7 +31,7 @@ export default function PublicationCard() {
 
   return (
     <PublicationCardContainer>
-      <img src={user.photo} alt={user.username} />
+      <img src={user.photo} alt={user.name} />
       <form onSubmit={(e) => handleSubmit(e)}>
         <h6>What are you going to share today?</h6>
         <input

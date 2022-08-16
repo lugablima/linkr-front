@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unstable-nested-components */
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { IoHeartOutline, IoHeart } from "react-icons/io5";
@@ -6,11 +5,14 @@ import axios from "axios";
 import ReactTooltip from "react-tooltip";
 import { ReactTagify } from "react-tagify";
 import { useNavigate } from "react-router-dom";
+import { useUserContext } from "../../../contexts/UserContext";
 
 export default function Post({ post: { id, user, link } }) {
   const [likes, setLikes] = useState({});
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const {
+    user: { token },
+  } = useUserContext();
 
   const config = {
     headers: {
@@ -98,19 +100,17 @@ export default function Post({ post: { id, user, link } }) {
         />
       </LeftSide>
       <RightSide>
-        <Username>{user.name}</Username>
-        <LegendLink>{link.legend}</LegendLink>
+        <Username onClick={() => navigate(`/users/${user.id}`)}>{user.name}</Username>
+
+        <ReactTagify tagStyle={hashtagStyle} tagClicked={(hashtag) => navigate(`/hashtag/${hashtag.replace("#", "").toLocaleLowerCase()}`)}>
+          <LegendLink>{link.legend ? link.legend : ""}</LegendLink>
+        </ReactTagify>
+
         <a href={link.url} target="_blank" rel="noreferrer">
           <LinkContainer>
             <LinkInfos>
               <h4>{link.title ? link.title : "Clique no snippet para conferir este link!"}</h4>
-
-              <ReactTagify>
-                tagStyle={hashtagStyle}
-                tagClicked={(hashtag) => navigate(`/hashtag/${hashtag.replace("#", "")}`)}
-                <h5>{link.description ? link.description : "Esse link parece ser legal, clique no snippet para conferir!"}</h5>
-              </ReactTagify>
-
+              <h5>{link.description ? link.description : "Esse link parece ser legal, clique no snippet para conferir!"}</h5>
               <h6>{link.url}</h6>
             </LinkInfos>
             <img src={link.image ? link.image : "#"} alt="Link" />
