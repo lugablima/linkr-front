@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unstable-nested-components */
 import styled from "styled-components";
 import axios from "axios";
 
@@ -33,7 +32,9 @@ export default function SignUp() {
       navigate("/");
     } catch (error) {
       setIsLoading(false);
-      alert("Oops! something went wrong", error);
+      if (error.response.status === 409) {
+        alert(error.response.data);
+      } else alert("Oops! something went wrong");
     }
   }
 

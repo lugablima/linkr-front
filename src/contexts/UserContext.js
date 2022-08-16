@@ -11,6 +11,7 @@ export const useUserContext = () => useContext(UserContext);
 
 export default function UserProvider({ children }) {
   const [user, setUser] = useState(getLocalUser());
+
   useEffect(() => {
     localStorage.setItem("user", JSON.stringify(user));
   }, [user]);

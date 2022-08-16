@@ -1,9 +1,7 @@
-/* eslint-disable no-unused-vars */
 import styled from "styled-components";
 import axios from "axios";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-// comecei import do user context
 import { ThreeDots } from "react-loader-spinner";
 import { useUserContext } from "../../../contexts/UserContext";
 
@@ -19,6 +17,10 @@ export default function LoginPage() {
   });
 
   const [isLoading, setIsLoading] = useState(false); // loader spinner state
+
+  useEffect(() => {
+    if (user) navigate("/timeline");
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -37,16 +39,13 @@ export default function LoginPage() {
 
       setUser({ ...data });
 
-      localStorage.setItem("user", JSON.stringify(data));
-
       navigate("/timeline");
     } catch (error) {
       setIsLoading(false);
-      alert("Email or password wrong, please try again", error);
+      alert("Email or password wrong, please try again");
     }
   }
 
-  // eslint-disable-next-line react/no-unstable-nested-components
   function BuildingLoginForms() {
     return (
       <>

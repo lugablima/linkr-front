@@ -7,7 +7,7 @@ export default function PublicationCard() {
   const [inputs, setInputs] = useState({ link: "", description: "" });
   const [isDisabled, setIsDisabled] = useState(false);
   const { setPosts, getPosts, createPost } = usePostsContext();
-  const { user, setUser } = useUserContext();
+  const { user } = useUserContext();
 
   async function handleSubmit(e) {
     e.preventDefault();
