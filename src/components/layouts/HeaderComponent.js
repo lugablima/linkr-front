@@ -1,21 +1,21 @@
 /* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable react/no-unstable-nested-components */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import styled from "styled-components";
 import SearchBar from "./SearchBar";
+import { useUserContext } from "../../contexts/UserContext";
 
 export default function HeaderComponent() {
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
 
-  const user = localStorage.getItem("user");
+  const { user, setUser } = useUserContext();
 
   const logout = () => {
-    localStorage.removeItem("user");
+    setUser(null);
     navigate("/");
   };
 
@@ -26,13 +26,13 @@ export default function HeaderComponent() {
       {show && <div className="overlay" onClick={() => setShow(false)} />}
       <div onClick={() => setShow(!show)}>
         {show ? <IoIosArrowUp size={30} fill="#FFFFFF" /> : <IoIosArrowDown size={30} fill="#FFFFFF" />}
-        {user && <img src={user.photo} alt={user.username} />}
+        {user && <img src={user.photo} alt={user.name} />}
       </div>
 
       {show && (
         <div className="dropdown">
           <ul>
-            <li onClick={logout}>
+            <li onClick={() => logout()}>
               <span>Logout</span>
             </li>
           </ul>
