@@ -8,6 +8,7 @@ import LoginPage from "./components/pages/Login/LoginPage";
 import SignUpPage from "./components/pages/SignUp/SignUpPage";
 import TimelinePage from "./components/pages/Timeline/TimelinePage";
 import HashtagPage from "./components/pages/Timeline/HashtagPage";
+import UserPage from "./components/pages/UserPage/UserPage";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
               <Route path="/sign-up" element={<SignUpPage />} />
               <Route path="/timeline" element={<TimelinePage />} />
               <Route path="/hashtag/:hashtag" element={<HashtagPage />} />
+              <Route path="/users/:id" element={<UserPage />} />
             </Routes>
           </BrowserRouter>
         </PostsProvider>
