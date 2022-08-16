@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import { useEffect } from "react";
 import styled from "styled-components";
 import { RotatingLines } from "react-loader-spinner";

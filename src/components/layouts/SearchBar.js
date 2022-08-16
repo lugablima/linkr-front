@@ -51,7 +51,7 @@ export default function SearchBar() {
         <List display={show ? "flex" : "none"}>
           {result.length ? (
             result.map((user) => (
-              <div className="user" onClick={() => navigate(`/users/${user.id}`, { state: { username: user.username } })} key={user.id}>
+              <div className="user" onClick={() => navigate(`/user/${user.id}`, { state: { username: user.username } })} key={user.id}>
                 <img src={user.pictureURL} alt={user.username} />
                 <div className="text">
                   <p>{user.username}</p>

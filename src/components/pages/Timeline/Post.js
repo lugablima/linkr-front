@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { IoHeartOutline, IoHeart } from "react-icons/io5";
@@ -100,7 +101,9 @@ export default function Post({ post: { id, user, link } }) {
         />
       </LeftSide>
       <RightSide>
-        <Username onClick={() => navigate(`/users/${user.id}`)}>{user.name}</Username>
+        <Username onClick={() => navigate(`/user/${user.id}`, { state: { username: user.username, photo: user.photo } })}>
+          {user.name}
+        </Username>
 
         <ReactTagify tagStyle={hashtagStyle} tagClicked={(hashtag) => navigate(`/hashtag/${hashtag.replace("#", "").toLocaleLowerCase()}`)}>
           <LegendLink>{link.legend ? link.legend : ""}</LegendLink>
