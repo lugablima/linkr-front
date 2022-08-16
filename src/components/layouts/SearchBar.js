@@ -154,7 +154,7 @@ const List = styled.div`
     }
     img {
       height: 39px;
-      width: 30px;
+      width: 39px;
       border-radius: 85px;
       margin-left: 5px;
     }

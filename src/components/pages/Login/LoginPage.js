@@ -32,13 +32,7 @@ export default function LoginPage() {
 
       setIsLoading(false);
 
-      const data = {
-        name: response.data.name,
-        photo: response.data.photo,
-        token: response.data.token,
-      };
-
-      setUser({ ...data });
+      setUser(response.data);
 
       navigate("/timeline");
     } catch (error) {

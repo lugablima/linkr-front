@@ -7,6 +7,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../../../contexts/UserContext";
+import { usePostsContext } from "../../../contexts/PostsContext";
 
 export default function Trending() {
   const [hashtags, setHashtags] = useState([]);
@@ -14,6 +15,7 @@ export default function Trending() {
   const {
     user: { token },
   } = useUserContext();
+  const { posts } = usePostsContext();
 
   const navigate = useNavigate();
 
@@ -30,7 +32,7 @@ export default function Trending() {
 
   useEffect(() => {
     getTrending();
-  }, []);
+  }, [posts]);
 
   return (
     <Container>

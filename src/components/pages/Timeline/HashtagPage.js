@@ -19,10 +19,11 @@ export default function HashtagPage() {
   const { hashtag } = useParams();
 
   function RenderPosts() {
-    if (!hashtagPosts) return <Message>There are no posts with this hashtag yet</Message>;
+    if (!hashtagPosts) return <Message>Loading</Message>;
     if (hashtagPosts.length) {
       return hashtagPosts.map((post) => <Post key={post.id} post={post} />);
     }
+    return <Message>There are no posts with this hashtag yet</Message>;
   }
 
   useEffect(() => {
@@ -34,7 +35,6 @@ export default function HashtagPage() {
 
         setHashtagPosts(response.data);
       } catch (error) {
-        // if(error.response.status === 404)
         alert("An error occured while trying to fetch the posts, please refresh the page");
       }
     }

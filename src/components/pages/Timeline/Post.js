@@ -125,7 +125,7 @@ export default function Post({ post: { id, user, link } }) {
 const Container = styled.div`
   width: 100%;
   max-width: 611px;
-  height: 276px;
+  min-height: 276px;
   background: #171717;
   border-radius: 16px;
   padding: 17px 21px 20px 18px;

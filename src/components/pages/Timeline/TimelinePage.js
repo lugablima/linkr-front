@@ -13,10 +13,11 @@ export default function TimelinePage() {
   const { posts, setPosts, getPosts } = usePostsContext();
 
   function RenderPosts() {
-    if (!posts) return <Message>There are no posts yet</Message>;
+    if (!posts) return <Message>Loading</Message>;
     if (posts.length) {
       return posts.map((post) => <Post key={post.id} post={post} />);
     }
+    return <Message>There are no posts yet</Message>;
   }
 
   useEffect(() => {

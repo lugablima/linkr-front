@@ -15,7 +15,6 @@ export default function UserPage() {
 
   const location = useLocation();
   const { username, photo } = location.state;
-  console.log({ username });
 
   const [userPosts, setUserPosts] = useState(null);
 
@@ -26,17 +25,18 @@ export default function UserPage() {
 
   function RenderPosts() {
     if (!userPosts) {
-      return <Message>{username} has no posts yet</Message>;
+      return <Message>Loading</Message>;
     }
     if (userPosts.length) {
       return userPosts.map((post) => <Post key={post.id} post={post} />);
     }
+    return <Message>{username} has no posts yet</Message>;
   }
 
   useEffect(() => {
     async function getUserPosts() {
       try {
-        const response = await axios.get(`${API}/user/${id}`, {
+        const response = await axios.get(`${API}/posts/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -84,12 +84,12 @@ const Container = styled.aside`
   align-items: center;
   margin-top: 150px;
 
-  span {
+  & > span {
     display: flex;
     flex-direction: row;
   }
 
-  img {
+  & > span > img {
     border-radius: 26px;
     height: 50px;
     width: 50px;
