@@ -21,5 +21,10 @@ export default function PostsProvider({ children }) {
   async function createPost(inputs) {
     return axios.post(`${process.env.REACT_APP_API}/posts`, inputs, config);
   }
-  return <PostsContext.Provider value={{ posts, setPosts, getPosts, createPost }}>{children}</PostsContext.Provider>;
+
+  async function deletePost(postId) {
+    return axios.delete(`${process.env.REACT_APP_API}/posts/${postId}`, config);
+  }
+
+  return <PostsContext.Provider value={{ posts, setPosts, getPosts, createPost, deletePost }}>{children}</PostsContext.Provider>;
 }
