@@ -51,7 +51,11 @@ export default function SearchBar() {
         <List display={show ? "flex" : "none"}>
           {result.length ? (
             result.map((user) => (
-              <div className="user" onClick={() => navigate(`/users/${user.id}`, { state: { username: user.username } })} key={user.id}>
+              <div
+                className="user"
+                onClick={() => navigate(`/user/${user.id}`, { state: { username: user.username, photo: user.pictureURL } })}
+                key={user.id}
+              >
                 <img src={user.pictureURL} alt={user.username} />
                 <div className="text">
                   <p>{user.username}</p>
@@ -123,9 +127,9 @@ const List = styled.div`
   position: absolute;
   display: ${(props) => props.display} !important;
   flex-direction: column;
-  top: 35px;
-  left: 5px;
-  width: 96%;
+  top: 44px;
+  left: 3px;
+  width: 99%;
   max-height: 300px;
   background-color: #e7e7e7;
   border-top-left-radius: 2px;
@@ -134,6 +138,7 @@ const List = styled.div`
   border-bottom-right-radius: 8px;
   overflow-y: scroll;
   overflow-x: hidden;
+  overflow: hidden;
   z-index: 6;
   .user {
     width: 100%;
@@ -149,7 +154,7 @@ const List = styled.div`
     }
     img {
       height: 39px;
-      width: 30px;
+      width: 39px;
       border-radius: 85px;
       margin-left: 5px;
     }

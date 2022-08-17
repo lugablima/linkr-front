@@ -1,8 +1,8 @@
+/* eslint-disable react/no-unstable-nested-components */
 import styled from "styled-components";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { RotatingLines } from "react-loader-spinner";
 
 import HeaderComponent from "../../layouts/HeaderComponent";
 import { useUserContext } from "../../../contexts/UserContext";
@@ -19,16 +19,11 @@ export default function HashtagPage() {
   const { hashtag } = useParams();
 
   function RenderPosts() {
-    if (!hashtagPosts)
-      return (
-        <StyledSpinner>
-          <RotatingLines type="RotatingLines" strokeColor="grey" strokeWidth="5" animationDuration="0.75" width="70" visible />
-        </StyledSpinner>
-      );
+    if (!hashtagPosts) return <Message>Loading</Message>;
     if (hashtagPosts.length) {
       return hashtagPosts.map((post) => <Post key={post.id} post={post} />);
     }
-    return <Message>There are no posts yet</Message>;
+    return <Message>There are no posts with this hashtag yet</Message>;
   }
 
   useEffect(() => {
@@ -40,7 +35,6 @@ export default function HashtagPage() {
 
         setHashtagPosts(response.data);
       } catch (error) {
-        // if(error.response.status === 404)
         alert("An error occured while trying to fetch the posts, please refresh the page");
       }
     }
@@ -139,9 +133,5 @@ const MiddleContainer = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  margin: auto;
-`;
-
-const StyledSpinner = styled.div`
   margin: auto;
 `;

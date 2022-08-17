@@ -1,5 +1,8 @@
+/* eslint-disable jsx-a11y/no-noninteractive-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import styled from "styled-components";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { usePostsContext } from "../../../contexts/PostsContext";
 import { useUserContext } from "../../../contexts/UserContext";
 
@@ -8,6 +11,7 @@ export default function PublicationCard() {
   const [isDisabled, setIsDisabled] = useState(false);
   const { setPosts, getPosts, createPost } = usePostsContext();
   const { user } = useUserContext();
+  const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -31,7 +35,11 @@ export default function PublicationCard() {
 
   return (
     <PublicationCardContainer>
-      <img src={user.photo} alt={user.name} />
+      <img
+        src={user.photo}
+        alt={user.name}
+        onClick={() => navigate(`/user/${user.id}`, { state: { username: user.name, photo: user.photo } })}
+      />
       <form onSubmit={(e) => handleSubmit(e)}>
         <h6>What are you going to share today?</h6>
         <input

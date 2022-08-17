@@ -22,7 +22,7 @@ function App() {
               <Route path="/sign-up" element={<SignUpPage />} />
               <Route path="/timeline" element={<TimelinePage />} />
               <Route path="/hashtag/:hashtag" element={<HashtagPage />} />
-              <Route path="/users/:id" element={<UserPage />} />
+              <Route path="/user/:id" element={<UserPage />} />
             </Routes>
           </BrowserRouter>
         </PostsProvider>

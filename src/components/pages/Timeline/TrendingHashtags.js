@@ -7,6 +7,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../../../contexts/UserContext";
+import { usePostsContext } from "../../../contexts/PostsContext";
 
 export default function Trending() {
   const [hashtags, setHashtags] = useState([]);
@@ -14,6 +15,7 @@ export default function Trending() {
   const {
     user: { token },
   } = useUserContext();
+  const { posts } = usePostsContext();
 
   const navigate = useNavigate();
 
@@ -24,13 +26,13 @@ export default function Trending() {
       });
       setHashtags(response.data);
     } catch (error) {
-      setHashtags([error.response.data.message]);
+      console.log(error);
     }
   };
 
   useEffect(() => {
     getTrending();
-  }, []);
+  }, [posts]);
 
   return (
     <Container>
@@ -60,7 +62,7 @@ const Container = styled.div`
   height: 406px;
   background-color: #171717;
   border-radius: 16px;
-  margin-top: 250px;
+  margin-top: 150px;
   padding: 9px 16px;
   overflow-y: scroll;
   -ms-overflow-style: none;
