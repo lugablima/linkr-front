@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-no-bind */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/no-unstable-nested-components */
 import { useLocation, useParams } from "react-router-dom";
@@ -17,6 +18,8 @@ export default function UserPage() {
   const { username, photo } = location.state;
 
   const [userPosts, setUserPosts] = useState(null);
+  const [following, setFollowing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const API = process.env.REACT_APP_API;
   const {
@@ -50,6 +53,38 @@ export default function UserPage() {
     getUserPosts();
   }, [id]);
 
+  async function Follow() {
+    try {
+      await axios.post(
+        `${API}/follows/${id}`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      setFollowing(true);
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
+      alert("Error while trying to follow");
+    }
+  }
+
+  async function Unfollow() {
+    try {
+      await axios.delete(`${API}/follows/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setFollowing(false);
+    } catch (error) {
+      setIsLoading(false);
+      console.log(error);
+      alert("Error while trying to unfollow");
+    }
+  }
+
   function BuildUserPage() {
     return (
       <>
@@ -57,9 +92,18 @@ export default function UserPage() {
         <MiddleContainer>
           <TrendingContainer>
             <Container>
-              <span>
+              <div className="timeline">
                 <img src={photo} alt={username} /> <h1> {username}'s posts</h1>
-              </span>
+                {following ? (
+                  <UnFollowButton disabled={isLoading} onClick={Unfollow}>
+                    Unfollow
+                  </UnFollowButton>
+                ) : (
+                  <FollowButton disabled={isLoading} onClick={Follow}>
+                    Follow
+                  </FollowButton>
+                )}
+              </div>
               <PostsContainer>{RenderPosts()}</PostsContainer>
             </Container>
             <Trending />
@@ -82,14 +126,15 @@ const Container = styled.aside`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 150px;
+  margin-top: 50px;
 
-  & > span {
+  & > .timeline {
     display: flex;
     flex-direction: row;
+    justify-content: space-between;
   }
 
-  & > span > img {
+  & > .timeline > img {
     border-radius: 26px;
     height: 50px;
     width: 50px;
@@ -156,4 +201,29 @@ const MiddleContainer = styled.div`
   align-items: center;
   justify-content: center;
   margin: auto;
+`;
+
+const UnFollowButton = styled.button`
+  width: 112px;
+  height: 31px;
+  background-color: #ffffff;
+  border-radius: 5px;
+  color: #1877f2;
+  font: 400 14px "Lato", sans-serif;
+  border: none;
+  margin-top: 20px;
+  cursor: pointer;
+`;
+
+const FollowButton = styled.button`
+  width: 112px;
+  height: 31px;
+  background-color: #1877f2;
+  border-radius: 5px;
+  color: #ffffff;
+  font: 400 14px "Lato", sans-serif;
+  border: none;
+  margin-top: 20px;
+
+  cursor: pointer;
 `;
