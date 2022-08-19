@@ -8,14 +8,20 @@ import { ReactTagify } from "react-tagify";
 import { useNavigate } from "react-router-dom";
 import { IoMdTrash } from "react-icons/io";
 import Modal from "react-modal";
+import { AiOutlineComment } from "react-icons/ai";
 import LoadingThreeDots from "../../../libs/LoadingThreeDots";
 import { useUserContext } from "../../../contexts/UserContext";
 import { usePostsContext } from "../../../contexts/PostsContext";
+import commentsServices from "../../../services/commentsServices";
+import ListOfComments from "../../layouts/ListOfComments";
 
 export default function Post({ post: { id, user, link } }) {
   const [likes, setLikes] = useState({});
   const [openModal, setOpenModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [comments, setComments] = useState({});
+  const [showComments, setShowComments] = useState(false);
+  const [inputComment, setInputComment] = useState("");
   const navigate = useNavigate();
   const {
     user: { id: userId, token },
@@ -35,9 +41,23 @@ export default function Post({ post: { id, user, link } }) {
     });
   }
 
+  async function getComments() {
+    try {
+      const res = await commentsServices.getCommentsByPostId(id, config);
+
+      setComments(res.data);
+    } catch (error) {
+      // alert("Could not possible load the comments of this post, please try again later.");
+      console.log(error);
+    }
+  }
+
   setTimeout(() => ReactTooltip.rebuild(), [1000]);
 
-  useEffect(() => getLikes(), []);
+  useEffect(() => {
+    getLikes();
+    getComments();
+  }, []);
 
   const { likesCount, likedByUser } = likes;
   const users = likes.users?.filter((el) => el !== user.name);
@@ -57,6 +77,25 @@ export default function Post({ post: { id, user, link } }) {
         .catch(() => {
           alert("Could not like this post, please try again later!");
         });
+    }
+  }
+
+  // eslint-disable-next-line consistent-return
+  async function commentPost(e) {
+    e.preventDefault();
+
+    if (!inputComment.trim()) {
+      return alert("Write some comment!");
+    }
+
+    setInputComment("");
+
+    try {
+      await commentsServices.insertComment(id, inputComment, config);
+
+      getComments();
+    } catch (error) {
+      console.log(error);
     }
   }
 
@@ -116,64 +155,82 @@ export default function Post({ post: { id, user, link } }) {
   };
 
   return (
-    <Container>
-      <LeftSide>
-        <img src={user.photo} alt="Usuário" />
+    <>
+      <Container showComments={showComments}>
+        <LeftSide>
+          <img src={user.photo} alt="Usuário" />
 
-        {likedByUser ? <HeartIonIcon onClick={(e) => likePost(e)} /> : <HeartOutlineIonIcon onClick={(e) => likePost(e)} />}
+          {likedByUser ? <HeartIonIcon onClick={(e) => likePost(e)} /> : <HeartOutlineIonIcon onClick={(e) => likePost(e)} />}
 
-        {likesCount && (
-          <Likes data-tip data-for={`${id}`}>
-            {likesCount} {likesCount > 1 ? "likes" : "like"}
-          </Likes>
-        )}
-
-        <ReactTooltip
-          id={`${id}`}
-          place="bottom"
-          type="light"
-          effect="solid"
-          delayShow={500}
-          isCapture
-          className="tooltip-container"
-          getContent={() => RenderLikes()}
-        />
-      </LeftSide>
-      <RightSide>
-        <Username onClick={() => navigate(`/user/${user.id}`, { state: { username: user.name, photo: user.photo } })}>{user.name}</Username>
-
-        <ReactTagify tagStyle={hashtagStyle} tagClicked={(hashtag) => navigate(`/hashtag/${hashtag.replace("#", "").toLocaleLowerCase()}`)}>
-          <LegendLink>{link.legend ? link.legend : ""}</LegendLink>
-        </ReactTagify>
-
-        <a href={link.url} target="_blank" rel="noreferrer">
-          <LinkContainer>
-            <LinkInfos>
-              <h4>{link.title ? link.title : "Clique no snippet para conferir este link!"}</h4>
-              <h5>{link.description ? link.description : "Esse link parece ser legal, clique no snippet para conferir!"}</h5>
-              <h6>{link.url}</h6>
-            </LinkInfos>
-            <img src={link.image ? link.image : "#"} alt="Link" />
-          </LinkContainer>
-        </a>
-
-        {userId === user.id && <TrashIonIcon onClick={() => setOpenModal(true)} />}
-
-        <Modal isOpen={openModal} style={customStyles} onRequestClose={() => handleDelete()}>
-          {isLoading ? (
-            <LoadingThreeDots />
-          ) : (
-            <>
-              <MessageModal>Are you sure you want to delete this post?</MessageModal>
-              <ButtonsContainer>
-                <GoBackButton onClick={() => setOpenModal(false)}>No, go back</GoBackButton>
-                <DeleteItButton onClick={() => handleDelete()}>Yes, delete it</DeleteItButton>
-              </ButtonsContainer>
-            </>
+          {likesCount && (
+            <Likes data-tip data-for={`${id}`}>
+              {likesCount} {likesCount > 1 ? "likes" : "like"}
+            </Likes>
           )}
-        </Modal>
-      </RightSide>
-    </Container>
+
+          <ReactTooltip
+            id={`${id}`}
+            place="bottom"
+            type="light"
+            effect="solid"
+            delayShow={500}
+            isCapture
+            className="tooltip-container"
+            getContent={() => RenderLikes()}
+          />
+
+          <CommentIonIcon onClick={() => setShowComments(!showComments)} />
+          <MessageComments>{!comments.commentsCount ? "0" : comments.commentsCount} comments</MessageComments>
+        </LeftSide>
+        <RightSide>
+          <Username onClick={() => navigate(`/user/${user.id}`, { state: { username: user.name, photo: user.photo } })}>
+            {user.name}
+          </Username>
+
+          <ReactTagify
+            tagStyle={hashtagStyle}
+            tagClicked={(hashtag) => navigate(`/hashtag/${hashtag.replace("#", "").toLocaleLowerCase()}`)}
+          >
+            <LegendLink>{link.legend ? link.legend : ""}</LegendLink>
+          </ReactTagify>
+
+          <a href={link.url} target="_blank" rel="noreferrer">
+            <LinkContainer>
+              <LinkInfos>
+                <h4>{link.title ? link.title : "Clique no snippet para conferir este link!"}</h4>
+                <h5>{link.description ? link.description : "Esse link parece ser legal, clique no snippet para conferir!"}</h5>
+                <h6>{link.url}</h6>
+              </LinkInfos>
+              <img src={link.image ? link.image : "#"} alt="Link" />
+            </LinkContainer>
+          </a>
+
+          {userId === user.id && <TrashIonIcon onClick={() => setOpenModal(true)} />}
+
+          <Modal isOpen={openModal} style={customStyles} onRequestClose={() => handleDelete()}>
+            {isLoading ? (
+              <LoadingThreeDots />
+            ) : (
+              <>
+                <MessageModal>Are you sure you want to delete this post?</MessageModal>
+                <ButtonsContainer>
+                  <GoBackButton onClick={() => setOpenModal(false)}>No, go back</GoBackButton>
+                  <DeleteItButton onClick={() => handleDelete()}>Yes, delete it</DeleteItButton>
+                </ButtonsContainer>
+              </>
+            )}
+          </Modal>
+        </RightSide>
+      </Container>
+      {showComments && (
+        <ListOfComments
+          comments={comments}
+          inputComment={inputComment}
+          setInputComment={setInputComment}
+          commentPost={(e) => commentPost(e)}
+        />
+      )}
+    </>
   );
 }
 
@@ -184,7 +241,7 @@ const Container = styled.div`
   background: #171717;
   border-radius: 16px;
   padding: 17px 21px 20px 18px;
-  margin-bottom: 16px;
+  margin-bottom: ${(props) => (props.showComments ? "0" : "16px")};
   display: flex;
 
   @media (max-width: 767px) {
@@ -399,6 +456,23 @@ const Tooltip = styled.p`
   text-align: center;
   word-break: break-all;
   word-wrap: normal;
+`;
+
+const CommentIonIcon = styled(AiOutlineComment)`
+  width: 22px;
+  height: 22px;
+  color: #fff;
+  cursor: pointer;
+  margin: 18.91px 0 4.15px;
+`;
+
+const MessageComments = styled.h6`
+  width: 100%;
+  font: 400 11px/13px "Lato", sans-serif;
+  color: #fff;
+  text-align: center;
+  /* word-break: break-all;
+  word-wrap: normal; */
 `;
 
 const TrashIonIcon = styled(IoMdTrash)`
