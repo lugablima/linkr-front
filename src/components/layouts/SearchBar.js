@@ -58,6 +58,7 @@ export default function SearchBar() {
               >
                 <img src={user.pictureURL} alt={user.username} />
                 <div className="text">
+                  <h3>{user.followedByUser !== false ? "• following" : ""}</h3>
                   <p>{user.username}</p>
                 </div>
               </div>
@@ -157,6 +158,10 @@ const List = styled.div`
       width: 39px;
       border-radius: 85px;
       margin-left: 5px;
+    }
+    h3 {
+      font: 400 15px "Lato", sans-serif;
+      color: #c5c5c5;
     }
   }
   .text {
