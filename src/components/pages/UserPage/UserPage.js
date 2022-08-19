@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-no-bind */
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/no-unstable-nested-components */
@@ -5,6 +6,7 @@ import { useLocation, useParams } from "react-router-dom";
 import styled from "styled-components";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { ThreeDots } from "react-loader-spinner";
 
 import HeaderComponent from "../../layouts/HeaderComponent";
 import { useUserContext } from "../../../contexts/UserContext";
@@ -18,7 +20,7 @@ export default function UserPage() {
   const { username, photo } = location.state;
 
   const [userPosts, setUserPosts] = useState(null);
-  const [following, setFollowing] = useState(false);
+  const [following, setFollowing] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const API = process.env.REACT_APP_API;
@@ -36,6 +38,23 @@ export default function UserPage() {
     return <Message>{username} has no posts yet</Message>;
   }
 
+  async function checkFollowing() {
+    try {
+      await axios
+        .post(`${API}/following`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
+        .then((res) => {
+          if (res.data === true) {
+            return setFollowing(true);
+          }
+          return setFollowing(false);
+        });
+    } catch (error) {
+      console.log("Error while trying to check following", error);
+    }
+  }
+
   useEffect(() => {
     async function getUserPosts() {
       try {
@@ -49,11 +68,12 @@ export default function UserPage() {
         // alert("An error occured while trying to fetch the posts, please refresh the page");
       }
     }
-
+    checkFollowing();
     getUserPosts();
   }, [id]);
 
   async function Follow() {
+    setIsLoading(true);
     try {
       await axios.post(
         `${API}/follows/${id}`,
@@ -62,7 +82,7 @@ export default function UserPage() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
+      setIsLoading(false);
       setFollowing(true);
     } catch (error) {
       setIsLoading(false);
@@ -72,11 +92,13 @@ export default function UserPage() {
   }
 
   async function Unfollow() {
+    setIsLoading(true);
     try {
       await axios.delete(`${API}/follows/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
+      setIsLoading(false);
       setFollowing(false);
     } catch (error) {
       setIsLoading(false);
@@ -96,11 +118,23 @@ export default function UserPage() {
                 <img src={photo} alt={username} /> <h1> {username}'s posts</h1>
                 {following ? (
                   <UnFollowButton disabled={isLoading} onClick={Unfollow}>
-                    Unfollow
+                    {isLoading ? (
+                      <StyledSpinner>
+                        <ThreeDots type="ThreeDots" color="#FFFFFF" height={40} width={40} />
+                      </StyledSpinner>
+                    ) : (
+                      "Unfollow"
+                    )}
                   </UnFollowButton>
                 ) : (
                   <FollowButton disabled={isLoading} onClick={Follow}>
-                    Follow
+                    {isLoading ? (
+                      <StyledSpinner>
+                        <ThreeDots type="ThreeDots" color="#FFFFFF" height={40} width={40} />
+                      </StyledSpinner>
+                    ) : (
+                      "Follow"
+                    )}
                   </FollowButton>
                 )}
               </div>
@@ -121,38 +155,32 @@ export default function UserPage() {
 const Container = styled.aside`
   width: 100vw;
   max-width: 611px;
-
   height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 50px;
-
   & > .timeline {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
   }
-
   & > .timeline > img {
     border-radius: 26px;
     height: 50px;
     width: 50px;
     margin-right: 10px;
   }
-
   h1 {
     font: 700 43px/64px "Oswald", sans-serif;
     color: #fff;
     margin-bottom: 43px;
     align-self: flex-start;
   }
-
   @media (max-width: 767px) {
     width: 100%;
     max-width: none;
     margin-top: 91px;
-
     & > h1 {
       font: 700 33px/49px "Oswald", sans-serif;
       margin: 0 0 19px 17px;
@@ -166,7 +194,6 @@ const PostsContainer = styled.div`
   flex-direction: column;
   row-gap: 16px;
   padding-bottom: 78px;
-
   @media (max-width: 767px) {
     padding-bottom: 19px;
   }
@@ -176,7 +203,6 @@ const Message = styled.p`
   font: 400 19px/23px "Lato", sans-serif;
   text-align: center;
   color: #fff;
-
   @media (max-width: 767px) {
     font: 400 17px/20px "Lato", sans-serif;
   }
@@ -184,7 +210,6 @@ const Message = styled.p`
 
 const MainContainer = styled.div`
   width: 100%;
-
   margin: auto;
 `;
 
@@ -224,6 +249,11 @@ const FollowButton = styled.button`
   font: 400 14px "Lato", sans-serif;
   border: none;
   margin-top: 20px;
-
   cursor: pointer;
+`;
+
+const StyledSpinner = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
