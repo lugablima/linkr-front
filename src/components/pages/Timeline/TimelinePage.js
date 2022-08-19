@@ -1,34 +1,54 @@
 /* eslint-disable react/no-unstable-nested-components */
 import { useEffect } from "react";
 import styled from "styled-components";
+import { useLocation } from "react-router-dom";
 
 import PublicationCard from "./PublicationCard";
 import Post from "./Post";
 import { usePostsContext } from "../../../contexts/PostsContext";
+import { useInfiniteScrollContext } from "../../../contexts/InfiniteScrollContext";
 
 import Trending from "./TrendingHashtags";
 import HeaderComponent from "../../layouts/HeaderComponent";
+import InfiniteScroller from "./InfiniteScroller";
 
 export default function TimelinePage() {
   const { posts, setPosts, getPosts } = usePostsContext();
+  const { offset, incrementOffset, stopInfiniteScroll, resetInfiniteScroll } = useInfiniteScrollContext();
+
+  const location = useLocation();
 
   function RenderPosts() {
     if (!posts) return <Message>Loading</Message>;
     if (posts.length) {
-      return posts.map((post) => <Post key={post.id} post={post} />);
+      return posts.map((post) => <Post key={Math.random() - post.id} post={post} />);
     }
     return <Message>There are no posts yet</Message>;
   }
 
+  async function getAllPosts() {
+    try {
+      const res = await getPosts(offset);
+
+      if (!posts) setPosts(res.data);
+      else setPosts([...posts, ...res.data]);
+
+      incrementOffset();
+
+      if (!res.data.length) stopInfiniteScroll();
+    } catch (error) {
+      alert("An error occured while trying to fetch the posts, please refresh the page");
+    }
+  }
+
   useEffect(() => {
-    getPosts()
-      .then((res) => {
-        setPosts(res.data);
-      })
-      .catch(() => {
-        alert("An error occured while trying to fetch the posts, please refresh the page");
-      });
+    getAllPosts();
   }, []);
+
+  useEffect(() => {
+    setPosts(null);
+    resetInfiniteScroll();
+  }, [location.pathname]);
 
   return (
     <MainContainer>
@@ -38,7 +58,9 @@ export default function TimelinePage() {
           <Container>
             <h1>timeline</h1>
             <PublicationCard />
-            <PostsContainer>{RenderPosts()}</PostsContainer>
+            <PostsContainer>
+              <InfiniteScroller loadMore={() => getAllPosts()}>{RenderPosts()}</InfiniteScroller>
+            </PostsContainer>
           </Container>
           <Trending />
         </TrendingContainer>
@@ -78,9 +100,9 @@ const Container = styled.aside`
 
 const PostsContainer = styled.div`
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  row-gap: 16px;
+  /* display: flex;
+  flex-direction: column; */
+  /* row-gap: 16px; */
   padding-bottom: 78px;
 
   @media (max-width: 767px) {

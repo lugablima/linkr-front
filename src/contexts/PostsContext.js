@@ -14,8 +14,8 @@ export default function PostsProvider({ children }) {
     headers: { Authorization: `Bearer ${user?.token}` },
   };
 
-  async function getPosts() {
-    return axios.get(`${process.env.REACT_APP_API}/posts`, config);
+  async function getPosts(offset) {
+    return axios.get(`${process.env.REACT_APP_API}/posts/${offset}`, config);
   }
 
   async function createPost(inputs) {

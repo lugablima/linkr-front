@@ -214,6 +214,7 @@ const Container = styled.div`
   background: #171717;
   border-radius: 16px;
   padding: 17px 21px 20px 18px;
+  margin-bottom: 16px;
   display: flex;
 
   @media (max-width: 767px) {
