@@ -22,7 +22,7 @@ export default function InfiniteScrollProvider({ children }) {
   }
 
   return (
-    <InfiniteScrollContext.Provider value={{ offset, hasMore, incrementOffset, stopInfiniteScroll, resetInfiniteScroll }}>
+    <InfiniteScrollContext.Provider value={{ offset, hasMore, setHasMore, incrementOffset, stopInfiniteScroll, resetInfiniteScroll }}>
       {children}
     </InfiniteScrollContext.Provider>
   );

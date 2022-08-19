@@ -12,7 +12,7 @@ export default function LoadingTailSpin() {
 
 const Container = styled.div`
   width: 226px;
-  margin: 83px auto 0;
+  margin: 83px auto 20px;
   display: flex;
   flex-direction: column;
   align-items: center;

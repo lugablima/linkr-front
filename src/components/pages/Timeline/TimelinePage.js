@@ -1,11 +1,13 @@
 /* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/no-unstable-nested-components */
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useLocation } from "react-router-dom";
+import useInterval from "use-interval";
 import axios from "axios";
 
 import PublicationCard from "./PublicationCard";
+import TimelineUpdateBar from "../../layouts/TimelineUpdateBar";
 import Post from "./Post";
 import { usePostsContext } from "../../../contexts/PostsContext";
 import { useInfiniteScrollContext } from "../../../contexts/InfiniteScrollContext";
@@ -16,8 +18,11 @@ import HeaderComponent from "../../layouts/HeaderComponent";
 import InfiniteScroller from "./InfiniteScroller";
 
 export default function TimelinePage() {
-  const { posts, setPosts, getPosts } = usePostsContext();
-  const { offset, incrementOffset, stopInfiniteScroll, resetInfiniteScroll } = useInfiniteScrollContext();
+  const { posts, setPosts, getNewsPosts, getPosts } = usePostsContext();
+  const { offset, incrementOffset, setHasMore, stopInfiniteScroll, resetInfiniteScroll } = useInfiniteScrollContext();
+  const [showUpdate, setShowUpdate] = useState(false);
+  const [newsPosts, setNewsPosts] = useState([]);
+  const [load, setLoad] = useState(false);
   const [following, setFollowing] = useState(null);
 
   const API = process.env.REACT_APP_API;
@@ -64,18 +69,46 @@ export default function TimelinePage() {
   }
 
   async function getAllPosts() {
-    try {
-      const res = await getPosts(offset);
+    if (newsPosts.length) {
+      setShowUpdate(false);
+      setPosts([...newsPosts, ...posts]);
+      setNewsPosts([]);
+    } else {
+      try {
+        const res = await getPosts(offset);
 
-      if (!posts) setPosts(res.data);
-      else setPosts([...posts, ...res.data]);
+        if (!posts) setPosts(res.data);
+        else setPosts([...posts, ...res.data]);
 
-      incrementOffset();
+        incrementOffset();
 
-      if (!res.data.length) stopInfiniteScroll();
-    } catch (error) {
-      alert("An error occured while trying to fetch the posts, please refresh the page");
+        if (!res.data.length) stopInfiniteScroll();
+      } catch (error) {
+        alert("An error occured while trying to fetch the posts, please refresh the page");
+      }
     }
+  }
+
+  async function getAllNewsPosts() {
+    try {
+      const res = await getNewsPosts();
+
+      if (res.data.length) {
+        setNewsPosts(res.data);
+        setShowUpdate(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useInterval(() => {
+    getAllNewsPosts();
+  }, 15000);
+
+  function updateTimeline() {
+    setHasMore(true);
+    setLoad(true);
   }
 
   useEffect(() => {
@@ -96,8 +129,11 @@ export default function TimelinePage() {
           <Container>
             <h1>timeline</h1>
             <PublicationCard />
+            {showUpdate && <TimelineUpdateBar newsPosts={newsPosts} updateTimeline={() => updateTimeline()} />}
             <PostsContainer>
-              <InfiniteScroller loadMore={() => getAllPosts()}>{RenderPosts()}</InfiniteScroller>
+              <InfiniteScroller loadMore={() => getAllPosts()} isReverse={load} initialLoad={load}>
+                {RenderPosts()}
+              </InfiniteScroller>
             </PostsContainer>
           </Container>
           <Trending />

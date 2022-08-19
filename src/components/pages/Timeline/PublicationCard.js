@@ -9,7 +9,7 @@ import { useUserContext } from "../../../contexts/UserContext";
 export default function PublicationCard() {
   const [inputs, setInputs] = useState({ link: "", description: "" });
   const [isDisabled, setIsDisabled] = useState(false);
-  const { setPosts, getPosts, createPost } = usePostsContext();
+  const { createPost } = usePostsContext();
   const { user } = useUserContext();
   const navigate = useNavigate();
 
@@ -25,8 +25,9 @@ export default function PublicationCard() {
 
       setIsDisabled(false);
       setInputs({ link: "", description: "" });
-      const res = await getPosts();
-      setPosts(res.data);
+
+      // const res = await getPosts();
+      // setPosts(res.data);
     } catch (error) {
       alert("Houve um erro ao publicar seu link");
       setIsDisabled(false);
