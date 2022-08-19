@@ -27,6 +27,7 @@ export default function TimelinePage() {
   } = useUserContext();
 
   const location = useLocation();
+  console.log(following);
 
   function RenderPosts() {
     if (!posts) {
@@ -34,6 +35,9 @@ export default function TimelinePage() {
     }
     if (posts.length && following) {
       return posts.map((post) => <Post key={Math.random() - post.id} post={post} />);
+    }
+    if (following === false) {
+      return <Message>You don't follow anyone yet. Search for new friends!</Message>;
     }
     return <Message>No posts found from your friends</Message>;
   }
@@ -44,6 +48,7 @@ export default function TimelinePage() {
         .post(
           `${API}/follow`,
           {},
+
           {
             headers: { Authorization: `Bearer ${token}` },
           }
