@@ -27,7 +27,6 @@ export default function TimelinePage() {
   } = useUserContext();
 
   const location = useLocation();
-  console.log(following);
 
   function RenderPosts() {
     if (!posts) {
