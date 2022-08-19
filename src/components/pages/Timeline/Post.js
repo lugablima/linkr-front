@@ -8,14 +8,17 @@ import { ReactTagify } from "react-tagify";
 import { useNavigate } from "react-router-dom";
 import { IoMdTrash } from "react-icons/io";
 import Modal from "react-modal";
+import { AiOutlineComment } from "react-icons/ai";
 import LoadingThreeDots from "../../../libs/LoadingThreeDots";
 import { useUserContext } from "../../../contexts/UserContext";
 import { usePostsContext } from "../../../contexts/PostsContext";
+// import commentsServices from "../../../services/commentsServices";
 
 export default function Post({ post: { id, user, link } }) {
   const [likes, setLikes] = useState({});
   const [openModal, setOpenModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  // const [comments, setComments] = useState(null);
   const navigate = useNavigate();
   const {
     user: { id: userId, token },
@@ -35,9 +38,23 @@ export default function Post({ post: { id, user, link } }) {
     });
   }
 
+  // async function getComments() {
+  //   try {
+  //     const res = await commentsServices.getCommentsByPostId(id);
+
+  //     setComments(res.data);
+  //   } catch (error) {
+  //     // alert("Could not possible load the comments of this post, please try again later.");
+  //     console.log(error);
+  //   }
+  // }
+
   setTimeout(() => ReactTooltip.rebuild(), [1000]);
 
-  useEffect(() => getLikes(), []);
+  useEffect(() => {
+    getLikes();
+    // getComments();
+  }, []);
 
   const { likesCount, likedByUser } = likes;
   const users = likes.users?.filter((el) => el !== user.name);
@@ -59,6 +76,16 @@ export default function Post({ post: { id, user, link } }) {
         });
     }
   }
+
+  // async function commentPost() {
+  //   try {
+  //     await commentsServices.insertComment(id, input);
+
+  //     getComments();
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
 
   function RenderLikes() {
     if (likedByUser && users) {
@@ -138,6 +165,9 @@ export default function Post({ post: { id, user, link } }) {
           className="tooltip-container"
           getContent={() => RenderLikes()}
         />
+
+        <CommentIonIcon />
+        <MessageComments>0 comments</MessageComments>
       </LeftSide>
       <RightSide>
         <Username onClick={() => navigate(`/user/${user.id}`, { state: { username: user.name, photo: user.photo } })}>{user.name}</Username>
@@ -395,6 +425,23 @@ const Likes = styled.a`
 const Tooltip = styled.p`
   font: 700 11px/13px "Lato", sans-serif;
   color: #505050;
+  text-align: center;
+  word-break: break-all;
+  word-wrap: normal;
+`;
+
+const CommentIonIcon = styled(AiOutlineComment)`
+  width: 20px;
+  height: 20px;
+  color: #fff;
+  cursor: pointer;
+  margin-bottom: 4.15px;
+`;
+
+const MessageComments = styled.h6`
+  width: 100%;
+  font: 400 11px/13px "Lato", sans-serif;
+  color: #fff;
   text-align: center;
   word-break: break-all;
   word-wrap: normal;
