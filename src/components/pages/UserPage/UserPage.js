@@ -10,10 +10,14 @@ import { ThreeDots } from "react-loader-spinner";
 
 import HeaderComponent from "../../layouts/HeaderComponent";
 import { useUserContext } from "../../../contexts/UserContext";
+import { useInfiniteScrollContext } from "../../../contexts/InfiniteScrollContext";
 import Trending from "../Timeline/TrendingHashtags";
 import Post from "../Timeline/Post";
+import InfiniteScroller from "../Timeline/InfiniteScroller";
 
 export default function UserPage() {
+  const { offset, incrementOffset, stopInfiniteScroll, resetInfiniteScroll } = useInfiniteScrollContext();
+
   const { id } = useParams();
 
   const location = useLocation();
@@ -55,22 +59,33 @@ export default function UserPage() {
     }
   }
 
-  useEffect(() => {
-    async function getUserPosts() {
-      try {
-        const response = await axios.get(`${API}/posts/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+  async function getUserPosts() {
+    try {
+      const res = await axios.get(`${API}/posts/${id}/${offset}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        setUserPosts(response.data);
-      } catch (error) {
-        console.log(error);
-        // alert("An error occured while trying to fetch the posts, please refresh the page");
-      }
+      if (!userPosts) setUserPosts(res.data);
+      else setUserPosts([...userPosts, ...res.data]);
+
+      incrementOffset();
+
+      if (!res.data.length) stopInfiniteScroll();
+    } catch (error) {
+      console.log(error);
+      // alert("An error occured while trying to fetch the posts, please refresh the page");
     }
+  }
+
+  useEffect(() => {
     checkFollowing();
     getUserPosts();
-  }, [id]);
+  }, []);
+
+  useEffect(() => {
+    setUserPosts(null);
+    resetInfiniteScroll();
+  }, [location.pathname]);
 
   async function Follow() {
     setIsLoading(true);
@@ -139,6 +154,10 @@ export default function UserPage() {
                 )}
               </div>
               <PostsContainer>{RenderPosts()}</PostsContainer>
+
+              <PostsContainer>
+                <InfiniteScroller loadMore={() => getUserPosts()}>{RenderPosts()}</InfiniteScroller>
+              </PostsContainer>
             </Container>
             <Trending />
           </TrendingContainer>
@@ -190,9 +209,9 @@ const Container = styled.aside`
 
 const PostsContainer = styled.div`
   width: 100%;
-  display: flex;
+  /* display: flex;
   flex-direction: column;
-  row-gap: 16px;
+  row-gap: 16px; */
   padding-bottom: 78px;
   @media (max-width: 767px) {
     padding-bottom: 19px;

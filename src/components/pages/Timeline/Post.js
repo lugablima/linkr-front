@@ -6,14 +6,21 @@ import axios from "axios";
 import ReactTooltip from "react-tooltip";
 import { ReactTagify } from "react-tagify";
 import { useNavigate } from "react-router-dom";
+import { IoMdTrash } from "react-icons/io";
+import Modal from "react-modal";
+import LoadingThreeDots from "../../../libs/LoadingThreeDots";
 import { useUserContext } from "../../../contexts/UserContext";
+import { usePostsContext } from "../../../contexts/PostsContext";
 
 export default function Post({ post: { id, user, link } }) {
   const [likes, setLikes] = useState({});
+  const [openModal, setOpenModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const {
-    user: { token },
+    user: { id: userId, token },
   } = useUserContext();
+  const { setPosts, getPosts, deletePost } = usePostsContext();
 
   const config = {
     headers: {
@@ -70,10 +77,42 @@ export default function Post({ post: { id, user, link } }) {
     }
   }
 
+  async function handleDelete() {
+    try {
+      setIsLoading(true);
+      await deletePost(id);
+
+      setOpenModal(false);
+      const res = await getPosts();
+
+      setPosts(res.data);
+    } catch (error) {
+      setOpenModal(false);
+      alert("Could not possible delete this post, please try again later!");
+    }
+  }
+
   const hashtagStyle = {
     color: "white",
     fontWeight: "700",
     cursor: "pointer",
+  };
+
+  const customStyles = {
+    content: {
+      width: "597px",
+      height: "262px",
+      top: "calc(50vh - 131px)",
+      left: "calc(50vw - 298.5px)",
+      background: "#333",
+      borderRadius: "50px",
+      padding: `${isLoading ? "0" : "38px 0 65px"}`,
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: `${isLoading ? "center" : "flex-start"}`,
+      overflow: "hidden",
+    },
   };
 
   return (
@@ -117,6 +156,22 @@ export default function Post({ post: { id, user, link } }) {
             <img src={link.image ? link.image : "#"} alt="Link" />
           </LinkContainer>
         </a>
+
+        {userId === user.id && <TrashIonIcon onClick={() => setOpenModal(true)} />}
+
+        <Modal isOpen={openModal} style={customStyles} onRequestClose={() => handleDelete()}>
+          {isLoading ? (
+            <LoadingThreeDots />
+          ) : (
+            <>
+              <MessageModal>Are you sure you want to delete this post?</MessageModal>
+              <ButtonsContainer>
+                <GoBackButton onClick={() => setOpenModal(false)}>No, go back</GoBackButton>
+                <DeleteItButton onClick={() => handleDelete()}>Yes, delete it</DeleteItButton>
+              </ButtonsContainer>
+            </>
+          )}
+        </Modal>
       </RightSide>
     </Container>
   );
@@ -129,6 +184,7 @@ const Container = styled.div`
   background: #171717;
   border-radius: 16px;
   padding: 17px 21px 20px 18px;
+  margin-bottom: 16px;
   display: flex;
 
   @media (max-width: 767px) {
@@ -203,6 +259,7 @@ const RightSide = styled.div`
   flex-direction: column;
   justify-content: space-between;
   margin-top: 2px;
+  position: relative;
 
   @media (max-width: 767px) {
     margin-top: 1px;
@@ -342,4 +399,50 @@ const Tooltip = styled.p`
   text-align: center;
   word-break: break-all;
   word-wrap: normal;
+`;
+
+const TrashIonIcon = styled(IoMdTrash)`
+  width: 17px;
+  height: 17px;
+  color: #fff;
+  cursor: pointer;
+  position: absolute;
+  top: 6px;
+  right: 0;
+`;
+
+const MessageModal = styled.h6`
+  width: 340px;
+  font: 700 34px/41px "Lato", sans-serif;
+  text-align: center;
+  color: #fff;
+  word-break: break-all;
+  word-wrap: normal;
+  margin-bottom: 40px;
+`;
+
+const ButtonsContainer = styled.div`
+  width: 295px;
+  display: flex;
+  justify-content: space-between;
+
+  & > button {
+    width: 134px;
+    height: 37px;
+    border-radius: 5px;
+    border: none;
+    padding: 0;
+    font: 700 18px/22px "Lato", sans-serif;
+    cursor: pointer;
+  }
+`;
+
+const GoBackButton = styled.button`
+  background: #fff;
+  color: #1877f2;
+`;
+
+const DeleteItButton = styled.button`
+  background: #1877f2;
+  color: #fff;
 `;

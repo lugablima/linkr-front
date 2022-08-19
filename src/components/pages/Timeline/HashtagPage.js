@@ -2,21 +2,25 @@
 import styled from "styled-components";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 
 import HeaderComponent from "../../layouts/HeaderComponent";
 import { useUserContext } from "../../../contexts/UserContext";
 import Trending from "./TrendingHashtags";
 import Post from "./Post";
+import InfiniteScroller from "./InfiniteScroller";
+import { useInfiniteScrollContext } from "../../../contexts/InfiniteScrollContext";
 
 export default function HashtagPage() {
   const API = process.env.REACT_APP_API;
   const {
     user: { token },
   } = useUserContext();
+  const { offset, incrementOffset, stopInfiniteScroll, resetInfiniteScroll } = useInfiniteScrollContext();
   const [hashtagPosts, setHashtagPosts] = useState(null);
 
   const { hashtag } = useParams();
+  const location = useLocation();
 
   function RenderPosts() {
     if (!hashtagPosts) return <Message>Loading</Message>;
@@ -26,21 +30,31 @@ export default function HashtagPage() {
     return <Message>There are no posts with this hashtag yet</Message>;
   }
 
-  useEffect(() => {
-    async function getHashtagPosts() {
-      try {
-        const response = await axios.get(`${API}/hashtag/${hashtag}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+  async function getHashtagPosts() {
+    try {
+      const res = await axios.get(`${API}/hashtag/${hashtag}/${offset}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        setHashtagPosts(response.data);
-      } catch (error) {
-        alert("An error occured while trying to fetch the posts, please refresh the page");
-      }
+      if (!hashtagPosts) setHashtagPosts(res.data);
+      else setHashtagPosts([...hashtagPosts, ...res.data]);
+
+      incrementOffset();
+
+      if (!res.data.length) stopInfiniteScroll();
+    } catch (error) {
+      alert("An error occured while trying to fetch the posts, please refresh the page");
     }
+  }
 
+  useEffect(() => {
     getHashtagPosts();
-  }, [hashtag]);
+  }, []);
+
+  useEffect(() => {
+    setHashtagPosts(null);
+    resetInfiniteScroll();
+  }, [location.pathname]);
 
   function BuildHashtagPage() {
     return (
@@ -50,7 +64,9 @@ export default function HashtagPage() {
           <TrendingContainer>
             <Container>
               <h1>#{hashtag}</h1>
-              <PostsContainer>{RenderPosts()}</PostsContainer>
+              <PostsContainer>
+                <InfiniteScroller loadMore={() => getHashtagPosts()}>{RenderPosts()}</InfiniteScroller>
+              </PostsContainer>
             </Container>
             <Trending />
           </TrendingContainer>
@@ -95,9 +111,9 @@ const Container = styled.aside`
 
 const PostsContainer = styled.div`
   width: 100%;
-  display: flex;
+  /* display: flex;
   flex-direction: column;
-  row-gap: 16px;
+  row-gap: 16px; */
   padding-bottom: 78px;
 
   @media (max-width: 767px) {
