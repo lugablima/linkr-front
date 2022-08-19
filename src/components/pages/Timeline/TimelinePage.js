@@ -1,8 +1,10 @@
+/* eslint-disable react/no-unescaped-entities */
 /* eslint-disable react/no-unstable-nested-components */
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useLocation } from "react-router-dom";
 import useInterval from "use-interval";
+import axios from "axios";
 
 import PublicationCard from "./PublicationCard";
 import TimelineUpdateBar from "../../layouts/TimelineUpdateBar";
@@ -10,6 +12,7 @@ import Post from "./Post";
 import { usePostsContext } from "../../../contexts/PostsContext";
 import { useInfiniteScrollContext } from "../../../contexts/InfiniteScrollContext";
 
+import { useUserContext } from "../../../contexts/UserContext";
 import Trending from "./TrendingHashtags";
 import HeaderComponent from "../../layouts/HeaderComponent";
 import InfiniteScroller from "./InfiniteScroller";
@@ -20,15 +23,49 @@ export default function TimelinePage() {
   const [showUpdate, setShowUpdate] = useState(false);
   const [newsPosts, setNewsPosts] = useState([]);
   const [load, setLoad] = useState(false);
+  const [following, setFollowing] = useState(null);
+
+  const API = process.env.REACT_APP_API;
+
+  const {
+    user: { token },
+  } = useUserContext();
 
   const location = useLocation();
 
   function RenderPosts() {
-    if (!posts) return <Message>Loading</Message>;
-    if (posts.length) {
+    if (!posts) {
+      return <Message>Loading</Message>;
+    }
+    if (posts.length && following) {
       return posts.map((post) => <Post key={Math.random() - post.id} post={post} />);
     }
-    return <Message>There are no posts yet</Message>;
+    if (following === false) {
+      return <Message>You don't follow anyone yet. Search for new friends!</Message>;
+    }
+    return <Message>No posts found from your friends</Message>;
+  }
+
+  async function checkFollowing() {
+    try {
+      await axios
+        .post(
+          `${API}/follow`,
+          {},
+
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        )
+        .then((res) => {
+          if (res.data === true) {
+            return setFollowing(true);
+          }
+          return setFollowing(false);
+        });
+    } catch (error) {
+      console.log("Error while trying to check following", error);
+    }
   }
 
   async function getAllPosts() {
@@ -75,6 +112,7 @@ export default function TimelinePage() {
   }
 
   useEffect(() => {
+    checkFollowing();
     getAllPosts();
   }, []);
 
